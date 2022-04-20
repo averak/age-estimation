@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+[dev-packages]
+flake8 = "*"
+autopep8 = "*"
+mypy = "*"
+
+[requires]
+python_version = "3.9"
+
+[scripts]
+test = "python -m unittest discover tests"
+format = "autopep8 -ivr ."
+lint = "flake8 --show-source ."
+mypy = "mypy ."
