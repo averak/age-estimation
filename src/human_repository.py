@@ -6,7 +6,6 @@ from numpy import ndarray
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 
 from human_model import HumanModel
-from message import Message
 
 
 class HumanRepository:
@@ -32,7 +31,6 @@ class HumanRepository:
 
         humans: list[HumanModel] = []
 
-        print(Message.LOAD_ALL_DATA())
         file_names: list[str] = glob.glob(f"{self.SAVE_PATH}/*.jpg")
         for file_name in tqdm.tqdm(file_names):
             humans.append(self.select_by_filename(file_name))
@@ -49,6 +47,8 @@ class HumanRepository:
         # ファイル名の命名規則は下記を参照
         # https://susanqq.github.io/UTKFace/
         age, gender, race, _ = os.path.basename(file_name).split("_")
+
+        # 整形済みのコーパスを利用しているので、前処理は不要
         image: ndarray = img_to_array(load_img(file_name))
 
         return HumanModel(age=int(age), gender=int(gender), race=int(race), image=image)

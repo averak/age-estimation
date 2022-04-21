@@ -19,7 +19,7 @@ class HumanModel(BaseModel):
 
     race: int
     """
-    人種: (0: 白、1: 黒、2: アジア、3: インド、4: その他)
+    人種(0: 白、1: 黒、2: アジア、3: インド、4: その他)
     """
 
     image: np.ndarray

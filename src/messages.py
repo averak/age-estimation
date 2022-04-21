@@ -1,6 +1,6 @@
-class Message:
+class Messages:
     """
-    表示するメッセージを管理
+    表示するメッセージ
     """
 
     class FontColors:
@@ -16,3 +16,7 @@ class Message:
     @classmethod
     def LOAD_ALL_DATA(cls) -> str:
         return "データを読み込み中..."
+
+    @classmethod
+    def START_TRAINING(cls) -> str:
+        return "学習開始"

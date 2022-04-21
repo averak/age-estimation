@@ -1,8 +1,7 @@
 import numpy as np
-from base_nnet import BaseNNet
+from tensorflow.keras import Sequential, layers
 
-from tensorflow.keras import layers
-from tensorflow.keras import Sequential
+from nnet.base_nnet import BaseNNet
 
 
 class CNN(BaseNNet):
@@ -43,18 +42,10 @@ class CNN(BaseNNet):
         self.model.add(layers.Dense(1))
         self.model.add(layers.Activation('sigmoid'))
 
-        # self.model.summary()
-
         self.model.compile(
             optimizer="adam",
             loss="mse",
             metrics=['mae']
         )
 
-    def train(self, x: np.ndarray, y: np.ndarray) -> None:
-        """
-        学習
-        """
-
-        # TODO: 実装する
-        pass
+        # self.model.summary()

@@ -19,6 +19,21 @@ class BaseNNet(metaclass=ABCMeta):
     入力形状
     """
 
+    EPOCHS: int = 30
+    """
+    エポック数
+    """
+
+    BATCH_SIZE: int = 256
+    """
+    バッチサイズ
+    """
+
+    VALIDATION_SPLIT_RATE: float = 0.1
+    """
+    検証用データの割合
+    """
+
     def __init__(self):
         self.make_model()
 
@@ -30,10 +45,16 @@ class BaseNNet(metaclass=ABCMeta):
 
         raise NotImplementedError()
 
-    @abstractmethod
     def train(self, x: np.ndarray, y: np.ndarray) -> None:
         """
         学習
         """
 
-        raise NotImplementedError()
+        # TODO: save checkpoint
+        self.model.fit(
+            x,
+            y,
+            epochs=3,
+            batch_size=256,
+            validation_split=0.1
+        )

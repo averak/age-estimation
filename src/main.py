@@ -1,8 +1,10 @@
 import argparse
 
 from human_service import HumanService
+from nnet.cnn import CNN
 
-human_service: HumanService = HumanService()
+# アプリケーションサービスを作成
+human_service: HumanService = HumanService(CNN())
 
 # アプリケーションのオプションを定義
 # --helpでヘルプを表示できます
@@ -13,6 +15,6 @@ argument_parser.add_argument('-t', '--train',
 arguments = argument_parser.parse_args()
 
 if arguments.train:
-    pass
+    human_service.train()
 else:
     argument_parser.print_help()
