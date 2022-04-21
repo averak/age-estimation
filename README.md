@@ -29,10 +29,11 @@ $ pipenv run format
 
 ## Usage
 
-You can run this application from `src/main.py`.
+You need to download [UTKFace](https://susanqq.github.io/UTKFace/) and place the data in `data` directory.
+
+And then, you can run this application from `src/main.py`.
 
 ```bash
-# record your voice
 $ pipenv run python src/main.py --train
 ```
 
