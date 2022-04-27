@@ -1,4 +1,3 @@
-import numpy as np
 from tensorflow.keras import Sequential, layers
 
 from nnet.base_nnet import BaseNNet
