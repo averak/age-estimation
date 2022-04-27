@@ -21,30 +21,27 @@ class CNN(BaseNNet):
         self.model.add(layers.BatchNormalization())
         self.model.add(layers.Activation('relu'))
         self.model.add(layers.MaxPool2D())
-        self.model.add(layers.Dropout(0.5))
+        self.model.add(layers.Dropout(0.2))
 
         # convolution 2st layer
         self.model.add(layers.Conv2D(32, (3, 3), padding='same'))
         self.model.add(layers.BatchNormalization())
         self.model.add(layers.Activation('relu'))
         self.model.add(layers.MaxPool2D())
-        self.model.add(layers.Dropout(0.5))
+        self.model.add(layers.Dropout(0.2))
 
         # fully connected 1st layer
         self.model.add(layers.Flatten())
         self.model.add(layers.Dense(32, use_bias=False))
         self.model.add(layers.BatchNormalization())
         self.model.add(layers.Activation('relu'))
-        self.model.add(layers.Dropout(0.5))
+        self.model.add(layers.Dropout(0.2))
 
         # fully connected final layer
-        self.model.add(layers.Dense(1))
-        self.model.add(layers.Activation('sigmoid'))
+        self.model.add(layers.Dense(2))
 
         self.model.compile(
             optimizer="adam",
-            loss="mse",
-            metrics=['mae']
+            loss=self.loss,
+            metrics=[self.metric]
         )
-
-        # self.model.summary()

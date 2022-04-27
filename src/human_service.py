@@ -3,6 +3,7 @@ import numpy as np
 from human_repository import HumanRepository
 from messages import Messages
 from nnet.base_nnet import BaseNNet
+import sklearn
 
 
 class HumanService:
@@ -33,7 +34,7 @@ class HumanService:
         print(Messages.LOAD_ALL_DATA())
         humans = self.human_repository.select_all()
         x: np.ndarray = np.array([human.image for human in humans])
-        y: np.ndarray = np.array([human.age / 116 for human in humans])
+        y: np.ndarray = np.array([human.age for human in humans])
 
         # 学習
         print(Messages.START_TRAINING())

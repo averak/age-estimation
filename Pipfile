@@ -9,6 +9,7 @@ tensorflow = "*"
 numpy = "*"
 tqdm = "*"
 pillow = "*"
+sklearn = "*"
 
 [dev-packages]
 flake8 = "*"
