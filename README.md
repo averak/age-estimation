@@ -46,4 +46,5 @@ usage: main.py [-h] [-r] [-c]
 optional arguments:
   -h, --help   show this help message and exit
   -t, --train  学習
+  -c, --clear  チェックポイントを削除
 ```

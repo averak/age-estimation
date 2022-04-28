@@ -20,3 +20,7 @@ class Messages:
     @classmethod
     def START_TRAINING(cls) -> str:
         return "学習開始"
+
+    @classmethod
+    def DELETE_FILES(cls, file_size: int) -> str:
+        return f"{file_size}ファイル削除しました"
