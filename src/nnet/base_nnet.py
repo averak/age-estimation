@@ -1,9 +1,9 @@
 from abc import ABCMeta, abstractmethod
-import time
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import Sequential, metrics, backend
+from tensorflow.keras import Model, backend, metrics
+from tensorflow.keras.callbacks import ModelCheckpoint
 
 
 class BaseNNet(metaclass=ABCMeta):
@@ -11,7 +11,7 @@ class BaseNNet(metaclass=ABCMeta):
     ニューラルネットワーク
     """
 
-    model: Sequential
+    model: Model
     """
     モデル
     """
@@ -59,21 +59,36 @@ class BaseNNet(metaclass=ABCMeta):
 
         self.model.summary()
 
+    def load_weights(self, file_name: str) -> None:
+        """
+        学習済みモデルを読み込む
+        """
+
+        self.model.load_weights(file_name)
+
     def train(self, x: np.ndarray, y: np.ndarray) -> None:
         """
         学習
         """
 
-        for step in range(self.EPOCHS):
-            self.model.fit(
-                x,
-                y,
-                initial_epoch=step,
-                epochs=step + 1,
-                batch_size=self.BATCH_SIZE,
-                validation_split=self.VALIDATION_SPLIT_RATE
-            )
-            self.model.save_weights('%s/%d_%d.h5' % (self.CHECKPOINT_PATH, step + 1, time.time()))
+        # チェックポイントを保存するコールパックを定義
+        checkpoint_file = "%s/cp-{epoch}.h5" % self.CHECKPOINT_PATH
+        checkpoint_callback = ModelCheckpoint(
+            filepath=checkpoint_file,
+            verbose=1,
+            save_weights_only=True
+        )
+        self.model.save_weights(checkpoint_file.format(epoch=0))
+
+        # 学習
+        self.model.fit(
+            x,
+            y,
+            epochs=self.EPOCHS,
+            batch_size=self.BATCH_SIZE,
+            validation_split=self.VALIDATION_SPLIT_RATE,
+            callbacks=[checkpoint_callback]
+        )
 
     def loss(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
@@ -88,6 +103,7 @@ class BaseNNet(metaclass=ABCMeta):
         theta_pred = y_pred[:, 0]
         sigma_pred = y_pred[:, 1]
 
+        # return backend.mean((theta_true - theta_pred) ** 2)
         return backend.mean(tf.math.log(2 * np.pi * (sigma_pred ** 2)) + ((theta_true - theta_pred) ** 2) / (sigma_pred ** 2))
 
     def metric(self, y_true: np.ndarray, y_pred: np.ndarray):
@@ -100,3 +116,13 @@ class BaseNNet(metaclass=ABCMeta):
 
         # 推定年齢θの平均絶対誤差
         return metrics.mean_absolute_error(theta_true, theta_pred)
+
+    def predict(self, x: np.ndarray) -> tuple[float, float]:
+        """
+        年齢θと残差標準偏差σを推定
+        """
+
+        theta, sigma = self.model.predict(x)[0]
+        theta = theta * (90.0 - 30.0) + 30.0
+
+        return theta, sigma
