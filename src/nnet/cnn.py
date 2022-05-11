@@ -28,12 +28,14 @@ class CNN(BaseNNet):
         self.model.add(layers.BatchNormalization())
         self.model.add(layers.Activation('relu'))
         self.model.add(layers.MaxPool2D())
+        self.model.add(layers.Dropout(0.25))
 
         # fully connected 1st layer
         self.model.add(layers.Flatten())
         self.model.add(layers.Dense(64, use_bias=False))
         self.model.add(layers.BatchNormalization())
         self.model.add(layers.Activation('relu'))
+        self.model.add(layers.Dropout(0.25))
 
         # fully connected final layer
         self.model.add(layers.Dense(2))
