@@ -10,6 +10,7 @@ numpy = "*"
 tqdm = "*"
 pillow = "*"
 sklearn = "*"
+matplotlib = "*"
 
 [dev-packages]
 flake8 = "*"
