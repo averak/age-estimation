@@ -38,8 +38,6 @@ class HumanService:
         # データセットを作成
         print(Messages.LOAD_ALL_DATA())
         humans = self.human_repository.select_all()
-        # FIXME: データセットを削減しているので、全件に戻す
-        humans = list(filter(lambda x: x.age % 30 == 0, humans))
         x: np.ndarray = np.array([human.image for human in humans])
         # y: np.ndarray = np.array([human.age / 116.0 for human in humans])
         y: np.ndarray = sklearn.preprocessing.minmax_scale([human.age for human in humans])

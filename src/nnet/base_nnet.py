@@ -41,6 +41,16 @@ class BaseNNet(metaclass=ABCMeta):
     チェックポイントの保存パス
     """
 
+    MIN_AGE = 1.0
+    """
+    年齢の最小値
+    """
+
+    MAX_AGE = 116.0
+    """
+    年齢の最大値
+    """
+
     def __init__(self):
         self.make_model()
 
@@ -123,6 +133,7 @@ class BaseNNet(metaclass=ABCMeta):
         """
 
         theta, sigma = self.model.predict(x)[0]
-        theta = theta * (90.0 - 30.0) + 30.0
+        theta = theta * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        sigma = sigma * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
 
         return theta, sigma
