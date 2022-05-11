@@ -21,7 +21,7 @@ class BaseNNet(metaclass=ABCMeta):
     入力形状
     """
 
-    EPOCHS: int = 30
+    EPOCHS: int = 100
     """
     エポック数
     """
@@ -130,13 +130,13 @@ class BaseNNet(metaclass=ABCMeta):
         # 推定年齢θの平均絶対誤差
         return metrics.mean_absolute_error(theta_true, theta_pred)
 
-    def predict(self, x: np.ndarray) -> tuple[float, float]:
+    def predict(self, x: np.ndarray) -> np.ndarray:
         """
         年齢θと残差標準偏差σを推定
         """
 
-        theta, sigma = self.model.predict(x)[0]
-        theta = theta * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
-        sigma = sigma * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results = self.model.predict(x)
+        results[:, 0] = results[:, 0] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 1] = results[:, 1] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
 
-        return theta, sigma
+        return results
