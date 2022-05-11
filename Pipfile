@@ -17,9 +17,6 @@ autopep8 = "*"
 mypy = "*"
 tensorflow = "*"
 
-[requires]
-python_version = "3.9"
-
 [scripts]
 test = "python -m unittest discover tests"
 format = "autopep8 -ivr ."
