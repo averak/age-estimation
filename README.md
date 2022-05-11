@@ -53,5 +53,5 @@ optional arguments:
 
 ```bash
 $ docker build -t age-estimation .
-$ docker run -it age-estimation python src/main.py --train
+$ docker run --gpus=all -it age-estimation python src/main.py --train
 ```
