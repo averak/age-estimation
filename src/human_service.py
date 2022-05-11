@@ -38,7 +38,6 @@ class HumanService:
         print(Messages.LOAD_ALL_DATA())
         humans = self.human_repository.select_all()
         x: np.ndarray = np.array([human.image for human in humans])
-        # y: np.ndarray = np.array([human.age / 116.0 for human in humans])
         y: np.ndarray = sklearn.preprocessing.minmax_scale([human.age for human in humans])
 
         # 学習
@@ -50,8 +49,8 @@ class HumanService:
         年齢を推定
         """
 
-        self.nnet.load_weights(f"{self.nnet.CHECKPOINT_PATH}/cp-21.h5")
-        humans = self.human_repository.select_all()[:1000]
+        self.nnet.load_weights(f"{self.nnet.CHECKPOINT_PATH}/cp-final.h5")
+        humans = self.human_repository.select_all()
 
         human_images = np.array([human.image for human in humans])
         results = self.nnet.predict(human_images)

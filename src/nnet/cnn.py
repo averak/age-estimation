@@ -14,32 +14,28 @@ class CNN(BaseNNet):
         """
 
         self.model = Sequential()
+
         self.model.add(layers.Input(shape=self.INPUT_SHAPE))
+        self.model.add(layers.Conv2D(filters=32, kernel_size=3, activation='relu'))
+        self.model.add(layers.AveragePooling2D(pool_size=(2, 2)))
 
-        # convolution 1st layer
-        self.model.add(layers.Conv2D(64, (3, 3), padding='same'))
-        self.model.add(layers.BatchNormalization())
-        self.model.add(layers.Activation('relu'))
-        self.model.add(layers.MaxPool2D())
-        self.model.add(layers.Dropout(0.4))
+        self.model.add(layers.Conv2D(filters=64, kernel_size=3, activation='relu'))
+        self.model.add(layers.AveragePooling2D(pool_size=(2, 2)))
 
-        # convolution 2st layer
-        self.model.add(layers.Conv2D(64, (3, 3), padding='same'))
-        self.model.add(layers.BatchNormalization())
-        self.model.add(layers.Activation('relu'))
-        self.model.add(layers.MaxPool2D())
-        self.model.add(layers.Dropout(0.4))
+        self.model.add(layers.Conv2D(filters=128, kernel_size=3, activation='relu'))
+        self.model.add(layers.AveragePooling2D(pool_size=(2, 2)))
 
-        # fully connected 1st layer
-        self.model.add(layers.Flatten())
-        self.model.add(layers.Dense(64, use_bias=False))
-        self.model.add(layers.BatchNormalization())
-        self.model.add(layers.Activation('relu'))
-        self.model.add(layers.Dropout(0.4))
+        self.model.add(layers.Conv2D(filters=256, kernel_size=3, activation='relu'))
+        self.model.add(layers.AveragePooling2D(pool_size=(2, 2)))
 
-        # fully connected final layer
+        self.model.add(layers.GlobalAveragePooling2D())
+
+        self.model.add(layers.Dense(132, activation='relu'))
+
         self.model.add(layers.Dense(2))
         self.model.add(layers.Activation('sigmoid'))
+
+        self.model.add(layers.Input(shape=self.INPUT_SHAPE))
 
         self.model.compile(
             optimizer="adam",
