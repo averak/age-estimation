@@ -48,3 +48,10 @@ optional arguments:
   -t, --train  学習
   -c, --clear  チェックポイントを削除
 ```
+
+## Usage with Docker
+
+```bash
+$ docker build -t age-estimation .
+$ docker run -it age-estimation pipenv run python src/main.py --train
+```
