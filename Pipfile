@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 pydantic = "*"
-tensorflow = "*"
 numpy = "*"
 tqdm = "*"
 pillow = "*"
@@ -16,6 +15,7 @@ matplotlib = "*"
 flake8 = "*"
 autopep8 = "*"
 mypy = "*"
+tensorflow = "*"
 
 [requires]
 python_version = "3.9"

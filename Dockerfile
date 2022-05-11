@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM nvcr.io/nvidia/tensorflow:22.04-tf2-py3
 
 ENV WORKDIR /app/
 
@@ -8,4 +8,4 @@ COPY . $WORKDIR
 
 RUN pip install --upgrade pip &&  \
 	pip install pipenv && \
-	pipenv install
+	pipenv install --system
