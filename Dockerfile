@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/tensorflow:22.04-tf2-py3
+FROM tensorflow/tensorflow:2.3.0-gpu
 
 ENV WORKDIR /app/
 
@@ -6,8 +6,8 @@ WORKDIR ${WORKDIR}
 
 COPY . $WORKDIR
 
-# 利用するdockerイメージのpythonバージョンが最新でも3.8なので、
-# Python 3.9以降用の型アノテーションを削除する
+# 利用するdockerイメージのpythonバージョンが3.6なので、
+# Python 3.9以降用の型アノテーションを削除する必要がある
 RUN grep -l ' \-> list\[.*\]' ./**/*.py | xargs sed -i.bak -e 's/ \-> list\[.*\]//g' && \
 	grep -l ': list\[.*\] ' ./**/*.py | xargs sed -i.bak -e 's/: list\[.*\] //g'
 
