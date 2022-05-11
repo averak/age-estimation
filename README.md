@@ -53,5 +53,5 @@ optional arguments:
 
 ```bash
 $ docker build -t age-estimation .
-$ docker run -it age-estimation pipenv run python src/main.py --train
+$ docker run -it age-estimation python src/main.py --train
 ```
