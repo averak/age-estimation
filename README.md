@@ -14,7 +14,7 @@ Keras implementation of a CNN network for age estimation.
 ### Installation
 
 ```bash
-$ pipenv install
+$ pipenv install --dev
 ```
 
 ### Code check & format
@@ -49,7 +49,9 @@ optional arguments:
   -c, --clear  チェックポイントを削除
 ```
 
-## Usage with Docker
+### Run on docker
+
+After downloading the dataset, execute the following command.
 
 ```bash
 $ docker build -t age-estimation .
