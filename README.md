@@ -54,6 +54,18 @@ optional arguments:
 After downloading the dataset, execute the following command.
 
 ```bash
+# build docker image
 $ docker build -t age-estimation .
-$ docker run --gpus=all -it age-estimation python src/main.py --train
+
+# train
+$ docker run --gpus=all \
+  -v /home/abe/age-estimation/ckpt:/app/ckpt \
+  -v /home/abe/age-estimation/analysis:/app/analysis \
+  -it age-estimation python src/main.py --train
+
+# estimate & make heatmap
+$ docker run --gpus=all \
+  -v /home/abe/age-estimation/ckpt:/app/ckpt \
+  -v /home/abe/age-estimation/analysis:/app/analysis \
+  -it age-estimation python src/main.py --estimate
 ```
