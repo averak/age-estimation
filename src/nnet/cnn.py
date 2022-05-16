@@ -35,10 +35,4 @@ class CNN(BaseNNet):
 
         # fully connected final layer
         self.model.add(layers.Dense(2))
-        self.model.add(layers.Activation(self.activation))
-
-        self.model.compile(
-            optimizer="adam",
-            loss=self.loss,
-            metrics=[self.theta_metric, self.sigma_metric]
-        )
+        self.model.add(layers.Activation('sigmoid'))

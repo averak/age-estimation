@@ -54,6 +54,12 @@ class BaseNNet(metaclass=ABCMeta):
     def __init__(self):
         self.make_model()
 
+        self.model.compile(
+            optimizer="adam",
+            loss=self.loss,
+            metrics=[self.theta_metric, self.sigma_metric]
+        )
+
     @abstractmethod
     def make_model(self) -> None:
         """
