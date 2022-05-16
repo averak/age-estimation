@@ -10,7 +10,7 @@ RUN pip install --upgrade pip &&  \
 	pip install pipenv && \
 	pipenv install --system --skip-lock
 
-COPY . $WORKDIR
+COPY src $WORKDIR/src
 
 # 利用するdockerイメージのpythonバージョンが3.6なので、
 # Python 3.9以降用の型アノテーションを削除する必要がある

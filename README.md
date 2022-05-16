@@ -59,12 +59,14 @@ $ docker build -t age-estimation .
 
 # train
 $ docker run --gpus=all \
+  -v /home/abe/age-estimation/data:/app/data \
   -v /home/abe/age-estimation/ckpt:/app/ckpt \
   -v /home/abe/age-estimation/analysis:/app/analysis \
   -it age-estimation python src/main.py --train
 
 # estimate & make heatmap
 $ docker run --gpus=all \
+  -v /home/abe/age-estimation/data:/app/data \
   -v /home/abe/age-estimation/ckpt:/app/ckpt \
   -v /home/abe/age-estimation/analysis:/app/analysis \
   -it age-estimation python src/main.py --estimate
