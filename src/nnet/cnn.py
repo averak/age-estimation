@@ -34,5 +34,4 @@ class CNN(BaseNNet):
         self.model.add(layers.Activation('relu'))
 
         # fully connected final layer
-        self.model.add(layers.Dense(2))
-        self.model.add(layers.Activation('sigmoid'))
+        self.model.add(layers.Dense(2, use_bias=False))
