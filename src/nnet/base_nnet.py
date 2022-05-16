@@ -115,16 +115,25 @@ class BaseNNet(metaclass=ABCMeta):
 
         return backend.mean(tf.math.log(2 * np.pi * (sigma_pred ** 2)) + ((theta_true - theta_pred) ** 2) / (sigma_pred ** 2))
 
-    def metric(self, y_true: np.ndarray, y_pred: np.ndarray):
+    def theta_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
-        評価関数
+        年齢θの評価関数
         """
 
         theta_true = y_true[:, 0]
         theta_pred = y_pred[:, 0]
 
-        # 推定年齢θの平均絶対誤差
         return metrics.mean_absolute_error(theta_true, theta_pred)
+
+    def sigma_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
+        """
+        残差標準偏差σの評価関数
+        """
+
+        sigma_true = backend.abs(y_true[:, 0] - y_pred[:, 0])
+        sigma_pred = y_pred[:, 1]
+
+        return metrics.mean_absolute_error(sigma_true, sigma_pred)
 
     def activation(self, x: np.ndarray):
         """

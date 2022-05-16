@@ -40,5 +40,5 @@ class CNN(BaseNNet):
         self.model.compile(
             optimizer="adam",
             loss=self.loss,
-            metrics=[self.metric]
+            metrics=[self.theta_metric, self.sigma_metric]
         )
