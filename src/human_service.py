@@ -3,7 +3,6 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
-import sklearn.preprocessing
 
 from human_repository import HumanRepository
 from messages import Messages
@@ -38,7 +37,7 @@ class HumanService:
         print(Messages.LOAD_ALL_DATA())
         humans = self.human_repository.select_all()
         x: np.ndarray = np.array([human.image for human in humans])
-        y: np.ndarray = sklearn.preprocessing.minmax_scale([human.age for human in humans])
+        y: np.ndarray = np.array([human.age for human in humans])
 
         # 学習
         print(Messages.START_TRAINING())

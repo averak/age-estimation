@@ -120,22 +120,22 @@ class BaseNNet(metaclass=ABCMeta):
         評価関数
         """
 
-        max_age = tf.constant(self.MAX_AGE)
-        min_age = tf.constant(self.MIN_AGE)
-
-        theta_true = y_true[:, 0] * (max_age - min_age) + min_age
-        theta_pred = y_pred[:, 0] * (max_age - min_age) + min_age
+        theta_true = y_true[:, 0]
+        theta_pred = y_pred[:, 0]
 
         # 推定年齢θの平均絶対誤差
         return metrics.mean_absolute_error(theta_true, theta_pred)
+
+    def activation(self, x: np.ndarray):
+        """
+        活性化関数
+        """
+
+        return tf.math.log(x ** 2)
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         """
         年齢θと残差標準偏差σを推定
         """
 
-        results = self.model.predict(x)
-        results[:, 0] = results[:, 0] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
-        results[:, 1] = results[:, 1] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
-
-        return results
+        return self.model.predict(x)
