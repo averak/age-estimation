@@ -35,3 +35,4 @@ class CNN(BaseNNet):
 
         # fully connected final layer
         self.model.add(layers.Dense(2, use_bias=False))
+        self.model.add(layers.Activation('relu'))
