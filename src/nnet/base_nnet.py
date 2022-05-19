@@ -119,9 +119,7 @@ class BaseNNet(metaclass=ABCMeta):
         theta_pred = y_pred[:, 0]
         sigma_pred = y_pred[:, 1]
 
-        epsilon = backend.constant(backend.epsilon())
-
-        return backend.mean(tf.math.log(2 * np.pi * (sigma_pred ** 2 + epsilon) + ((theta_true - theta_pred) ** 2) / (sigma_pred ** 2 + epsilon)))
+        return backend.mean(tf.math.log(2 * np.pi * (sigma_pred ** 2) + ((theta_true - theta_pred) ** 2) / (sigma_pred ** 2)))
 
     def theta_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
