@@ -54,23 +54,40 @@ class HumanRepository:
 
         return HumanModel(age=int(age), gender=int(gender), race=int(race), image=image, file_name=file_name)
 
-    def split_train_test(self, humans: list[HumanModel], test_rate: float = 0.1) -> list:
+    def split_train_test(self, humans: list[HumanModel], test_rate: float = 0.1) -> list[list[HumanModel]]:
         """
         学習用、検証用に人間データを分割
 
         @return 人間リスト
         """
 
+        # 分割履歴を保存するファイル名
+        train_file_name = f"{self.SAVE_PATH}/train_files.txt"
+        test_file_name = f"{self.SAVE_PATH}/test_files.txt"
+
+        # 分割するファイルリストを生成
+        # 分割履歴が残っている場合は、それを再現する
+        train_files: list[str] = []
+        test_files: list[str] = []
+        if os.path.exists(train_file_name) and os.path.exists(test_file_name):
+            with open(train_file_name, "r") as f:
+                train_files = [line.replace("\n", '') for line in f.readlines()]
+            with open(test_file_name, "r") as f:
+                test_files = [line.replace("\n", '') for line in f.readlines()]
+        else:
+            np.random.shuffle(humans)
+            split_index = int(test_rate * len(humans))
+            train_files = [human.file_name for human in humans[split_index:]]
+            test_files = [human.file_name for human in humans[0:split_index]]
+
         # 学習用、検証用に分割
-        np.random.shuffle(humans)
-        split_index = int(test_rate * len(humans))
-        humans_train = humans[split_index:]
-        humans_test = humans[0:split_index]
+        humans_train = list(filter(lambda x: x.file_name in train_files, humans))
+        humans_test = list(filter(lambda x: x.file_name in test_files, humans))
 
         # 分割結果を保存する
-        with open(f"{self.SAVE_PATH}/train_files.txt", "w") as f:
+        with open(train_file_name, "w") as f:
             f.writelines([human.file_name + "\n" for human in humans_train])
-        with open(f"{self.SAVE_PATH}/test_files.txt", "w") as f:
+        with open(test_file_name, "w") as f:
             f.writelines([human.file_name + "\n" for human in humans_test])
 
         return [humans_train, humans_test]

@@ -53,34 +53,63 @@ class HumanService:
 
         self.nnet.load_weights(f"{self.nnet.CHECKPOINT_PATH}/cp-final.h5")
         humans = self.human_repository.select_all()
+        humans_train, humans_test = self.human_repository.split_train_test(humans)
 
-        human_images = np.array([human.image for human in humans])
-        results = self.nnet.predict(human_images)
+        x_train = [human.image for human in humans_train]
+        x_test = [human.image for human in humans_test]
+        results_train = self.nnet.predict(np.array(x_train))
+        results_test = self.nnet.predict(np.array(x_test))
 
-        theta_pred_list: list[float] = []
-        theta_true_list: list[float] = []
-        sigma_pred_list: list[float] = []
-        sigma_true_list: list[float] = []
+        theta_pred_list_train: list[float] = []
+        theta_true_list_train: list[float] = []
+        sigma_pred_list_train: list[float] = []
+        sigma_true_list_train: list[float] = []
+        theta_pred_list_test: list[float] = []
+        theta_true_list_test: list[float] = []
+        sigma_pred_list_test: list[float] = []
+        sigma_true_list_test: list[float] = []
 
-        for i in range(len(results)):
-            human = humans[i]
-            theta, sigma = results[i]
-            theta_true_list.append(abs(human.age))
-            theta_pred_list.append(abs(theta))
-            sigma_true_list.append(abs(human.age - theta))
-            sigma_pred_list.append(abs(sigma))
+        for i in range(len(results_train)):
+            human = humans_train[i]
+            theta, sigma = results_train[i]
+            theta_true_list_train.append(abs(human.age))
+            theta_pred_list_train.append(abs(theta))
+            sigma_true_list_train.append(abs(human.age - theta))
+            sigma_pred_list_train.append(abs(sigma))
+
+        for i in range(len(results_test)):
+            human = humans_test[i]
+            theta, sigma = results_test[i]
+            theta_true_list_test.append(abs(human.age))
+            theta_pred_list_test.append(abs(theta))
+            sigma_true_list_test.append(abs(human.age - theta))
+            sigma_pred_list_test.append(abs(sigma))
 
         # 推定年齢θのヒートマップを作成
-        plt.hist2d(theta_pred_list, theta_true_list, bins=116)
+        plt.figure()
+        plt.hist2d(theta_pred_list_train, theta_true_list_train, bins=116)
         plt.xlabel("θ")
         plt.ylabel("Age")
-        plt.savefig('analysis/theta.png')
+        plt.savefig('analysis/theta_train.png')
+
+        plt.figure()
+        plt.hist2d(theta_pred_list_test, theta_true_list_test, bins=116)
+        plt.xlabel("θ")
+        plt.ylabel("Age")
+        plt.savefig('analysis/theta_test.png')
 
         # 残差標準偏差σのヒートマップを作成
-        plt.hist2d(sigma_pred_list, sigma_true_list, bins=116)
+        plt.figure()
+        plt.hist2d(sigma_pred_list_train, sigma_true_list_train, bins=116)
         plt.xlabel("σ")
         plt.ylabel("|V-θ|")
-        plt.savefig('analysis/sigma.png')
+        plt.savefig('analysis/sigma_train.png')
+
+        plt.figure()
+        plt.hist2d(sigma_pred_list_test, sigma_true_list_test, bins=116)
+        plt.xlabel("σ")
+        plt.ylabel("|V-θ|")
+        plt.savefig('analysis/sigma_test.png')
 
     def clear_checkpoint(self) -> None:
         """
