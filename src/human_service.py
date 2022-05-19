@@ -87,24 +87,24 @@ class HumanService:
 
         # 推定年齢θのヒートマップを作成
         plt.figure()
-        plt.hist2d(theta_pred_list_train, theta_true_list_train, bins=116)
+        plt.hist2d(theta_pred_list_train, theta_true_list_train, bins=116, range=[(0, 116), (0, 116)])
         plt.xlabel("θ")
         plt.ylabel("Age")
-        plt.xlim(1, 116)
-        plt.ylim(1, 116)
+        plt.xlim(0, 116)
+        plt.ylim(0, 116)
         plt.savefig('analysis/theta_train.png')
 
         plt.figure()
-        plt.hist2d(theta_pred_list_test, theta_true_list_test, bins=116)
+        plt.hist2d(theta_pred_list_test, theta_true_list_test, bins=116, range=[(0, 116), (0, 116)])
         plt.xlabel("θ")
         plt.ylabel("Age")
-        plt.xlim(1, 116)
-        plt.ylim(1, 116)
+        plt.xlim(0, 116)
+        plt.ylim(0, 116)
         plt.savefig('analysis/theta_test.png')
 
         # 残差標準偏差σのヒートマップを作成
         plt.figure()
-        plt.hist2d(sigma_pred_list_train, sigma_true_list_train, bins=116)
+        plt.hist2d(sigma_pred_list_train, sigma_true_list_train, bins=116, range=[(0, 20), (0, 50)])
         plt.xlabel("σ")
         plt.ylabel("|V-θ|")
         plt.xlim(0, 20)
@@ -112,7 +112,7 @@ class HumanService:
         plt.savefig('analysis/sigma_train.png')
 
         plt.figure()
-        plt.hist2d(sigma_pred_list_test, sigma_true_list_test, bins=116)
+        plt.hist2d(sigma_pred_list_test, sigma_true_list_test, bins=116, range=[(0, 20), (0, 50)])
         plt.xlabel("σ")
         plt.ylabel("|V-θ|")
         plt.xlim(0, 20)
