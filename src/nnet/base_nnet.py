@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
+import sklearn.preprocessing
 import tensorflow as tf
 from tensorflow.keras import Model, backend, metrics
 from tensorflow.keras.callbacks import ModelCheckpoint
@@ -87,6 +88,9 @@ class BaseNNet(metaclass=ABCMeta):
         学習
         """
 
+        y_train = sklearn.preprocessing.minmax_scale(y_train)
+        y_test = sklearn.preprocessing.minmax_scale(y_test)
+
         # チェックポイントを保存するコールパックを定義
         checkpoint_file = "%s/cp-{epoch}.h5" % self.CHECKPOINT_PATH
         checkpoint_callback = ModelCheckpoint(
@@ -119,15 +123,18 @@ class BaseNNet(metaclass=ABCMeta):
         theta_pred = y_pred[:, 0]
         sigma_pred = y_pred[:, 1]
 
-        return backend.mean(tf.math.log(2 * np.pi * (sigma_pred ** 2) + ((theta_true - theta_pred) ** 2) / (sigma_pred ** 2)))
+        return backend.mean(tf.math.log(2 * np.pi * (sigma_pred ** 2)) + ((theta_true - theta_pred) ** 2) / (sigma_pred ** 2))
 
     def theta_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
         年齢θの評価関数
         """
 
-        theta_true = y_true[:, 0]
-        theta_pred = y_pred[:, 0]
+        max_age = tf.constant(self.MAX_AGE)
+        min_age = tf.constant(self.MIN_AGE)
+
+        theta_true = y_true[:, 0] * (max_age - min_age) + min_age
+        theta_pred = y_pred[:, 0] * (max_age - min_age) + min_age
 
         return metrics.mean_absolute_error(theta_true, theta_pred)
 
@@ -136,8 +143,11 @@ class BaseNNet(metaclass=ABCMeta):
         残差標準偏差σの評価関数
         """
 
-        sigma_true = backend.abs(y_true[:, 0] - y_pred[:, 0])
-        sigma_pred = y_pred[:, 1]
+        max_age = tf.constant(self.MAX_AGE)
+        min_age = tf.constant(self.MIN_AGE)
+
+        sigma_true = backend.abs(y_true[:, 0] - y_pred[:, 0]) * (max_age - min_age) + min_age
+        sigma_pred = y_pred[:, 1] * (max_age - min_age) + min_age
 
         return metrics.mean_absolute_error(sigma_true, sigma_pred)
 
@@ -153,4 +163,8 @@ class BaseNNet(metaclass=ABCMeta):
         年齢θと残差標準偏差σを推定
         """
 
-        return self.model.predict(x)
+        results = self.model.predict(x)
+        results[:, 0] = results[:, 0] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 1] = results[:, 1] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+
+        return results
