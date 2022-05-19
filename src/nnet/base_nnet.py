@@ -119,12 +119,12 @@ class BaseNNet(metaclass=ABCMeta):
         y_true = tf.cast(y_true, y_pred.dtype)
 
         # theta: 推定年齢θ
-        # sigma: 残差標準偏差σ
+        # rho: ρ = log(σ^2)
         theta_true = y_true[:, 0]
         theta_pred = y_pred[:, 0]
-        sigma_pred = y_pred[:, 1]
+        rho_pred = y_pred[:, 1]
 
-        return backend.mean(tf.math.log(2 * np.pi * (sigma_pred ** 2)) + ((theta_true - theta_pred) ** 2) / (sigma_pred ** 2))
+        return backend.mean(rho_pred + ((theta_true - theta_pred) ** 2) * backend.exp(-rho_pred))
 
     def theta_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
@@ -158,9 +158,9 @@ class BaseNNet(metaclass=ABCMeta):
         """
 
         theta = sigmoid(x[:, 0])
-        sigma = tf.math.log(x[:, 1] ** 2)
+        rho = backend.log(x[:, 1] ** 2)
 
-        return tf.stack([theta, sigma], 1)
+        return tf.stack([theta, rho], 1)
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         """
