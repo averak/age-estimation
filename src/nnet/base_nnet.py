@@ -133,7 +133,7 @@ class BaseNNet(metaclass=ABCMeta):
 
     def sigma_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
-        return backend.mean(tf.math.log(2 * np.pi * (sigma_pred ** 2 + epsilon) + ((theta_true - theta_pred) ** 2) / (sigma_pred ** 2 + epsilon)))
+        残差標準偏差σの評価関数
         """
 
         sigma_true = backend.abs(y_true[:, 0] - y_pred[:, 0])
