@@ -4,7 +4,6 @@ import numpy as np
 import sklearn.preprocessing
 import tensorflow as tf
 from tensorflow.keras import Model, backend, metrics
-from tensorflow.keras.activations import sigmoid
 from tensorflow.keras.callbacks import ModelCheckpoint
 
 
@@ -158,8 +157,8 @@ class BaseNNet(metaclass=ABCMeta):
         活性化関数
         """
 
-        theta = sigmoid(x[:, 0])
-        rho = backend.log(x[:, 1] ** 2)
+        theta = backend.sigmoid(x[:, 0])
+        rho = x[:, 1]
 
         return tf.stack([theta, rho], 1)
 
