@@ -169,6 +169,6 @@ class BaseNNet(metaclass=ABCMeta):
 
         results = self.model.predict(x)
         results[:, 0] = results[:, 0] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
-        results[:, 1] = results[:, 1] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 1] = np.sqrt(np.exp(results[:, 1])) * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
 
         return results
