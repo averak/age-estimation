@@ -4,6 +4,7 @@ import numpy as np
 import sklearn.preprocessing
 import tensorflow as tf
 from tensorflow.keras import Model, backend, metrics
+from tensorflow.keras.activations import sigmoid
 from tensorflow.keras.callbacks import ModelCheckpoint
 
 
@@ -156,7 +157,10 @@ class BaseNNet(metaclass=ABCMeta):
         活性化関数
         """
 
-        return tf.math.log(x ** 2)
+        theta = sigmoid(x[:, 0])
+        sigma = tf.math.log(x[:, 1] ** 2)
+
+        return tf.stack([theta, sigma], 1)
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         """
