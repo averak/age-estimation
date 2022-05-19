@@ -148,7 +148,8 @@ class BaseNNet(metaclass=ABCMeta):
         min_age = tf.constant(self.MIN_AGE)
 
         sigma_true = backend.abs(y_true[:, 0] - y_pred[:, 0]) * (max_age - min_age) + min_age
-        sigma_pred = y_pred[:, 1] * (max_age - min_age) + min_age
+        rho_pred = y_pred[:, 1]
+        sigma_pred = backend.sqrt(backend.exp(rho_pred)) * (max_age - min_age) + min_age
 
         return metrics.mean_absolute_error(sigma_true, sigma_pred)
 
