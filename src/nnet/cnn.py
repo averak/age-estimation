@@ -35,4 +35,4 @@ class CNN(BaseNNet):
 
         # fully connected final layer
         self.model.add(layers.Dense(2))
-        self.model.add(layers.Activation(self.activation))
+        self.model.add(layers.Activation('sigmoid'))
