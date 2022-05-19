@@ -82,7 +82,7 @@ class BaseNNet(metaclass=ABCMeta):
 
         self.model.load_weights(file_name)
 
-    def train(self, x: np.ndarray, y: np.ndarray) -> None:
+    def train(self, x_train: np.ndarray, y_train: np.ndarray, x_test: np.ndarray, y_test: np.ndarray) -> None:
         """
         学習
         """
@@ -98,11 +98,11 @@ class BaseNNet(metaclass=ABCMeta):
 
         # 学習
         self.model.fit(
-            x,
-            y,
+            x_train,
+            y_train,
             epochs=self.EPOCHS,
             batch_size=self.BATCH_SIZE,
-            validation_split=self.VALIDATION_SPLIT_RATE,
+            validation_data=(x_test, y_test),
             callbacks=[checkpoint_callback]
         )
 
@@ -119,7 +119,9 @@ class BaseNNet(metaclass=ABCMeta):
         theta_pred = y_pred[:, 0]
         sigma_pred = y_pred[:, 1]
 
-        return backend.mean(tf.math.log(2 * np.pi * (sigma_pred ** 2 + backend.epsilon())) + ((theta_true - theta_pred) ** 2) / (sigma_pred ** 2 + backend.epsilon()))
+        epsilon = backend.constant(backend.epsilon())
+
+        return backend.mean(tf.math.log(2 * np.pi * (sigma_pred ** 2 + epsilon) + ((theta_true - theta_pred) ** 2) / (sigma_pred ** 2 + epsilon)))
 
     def theta_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
@@ -133,7 +135,7 @@ class BaseNNet(metaclass=ABCMeta):
 
     def sigma_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
-        残差標準偏差σの評価関数
+        return backend.mean(tf.math.log(2 * np.pi * (sigma_pred ** 2 + epsilon) + ((theta_true - theta_pred) ** 2) / (sigma_pred ** 2 + epsilon)))
         """
 
         sigma_true = backend.abs(y_true[:, 0] - y_pred[:, 0])

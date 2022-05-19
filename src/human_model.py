@@ -27,5 +27,10 @@ class HumanModel(BaseModel):
     画像データ(200 * 200 * 3)
     """
 
+    file_name: str
+    """
+    ファイル名
+    """
+
     class Config:
         arbitrary_types_allowed = True
