@@ -149,7 +149,7 @@ class BaseNNet(metaclass=ABCMeta):
         s = y_true[:, 1]
         P_M = y_pred[:, 0]
 
-        return metrics.mean_squared_error(backend.constant(1.0) - s, P_M)
+        return metrics.mean_absolute_error(backend.constant(1.0) - s, P_M)
 
     def θ_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
