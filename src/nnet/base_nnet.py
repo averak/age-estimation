@@ -58,7 +58,8 @@ class BaseNNet(metaclass=ABCMeta):
         self.model.compile(
             optimizer="adam",
             loss=self.loss,
-            # metrics=[self.theta_metric, self.sigma_metric]
+            # metrics=[self.P_M_metric, self.θ_metric, self.σ_metric]
+            metrics=[self.P_M_metric]
         )
 
     @abstractmethod
@@ -125,8 +126,8 @@ class BaseNNet(metaclass=ABCMeta):
         # P_M: 男性である確率
         # θ: 推定年齢
         # σ: 残差標準偏差
-        P_M = backend.constant(1.0) - y_pred[:, 0]
-        P_F = backend.constant(1.0) - y_pred[:, 0]
+        P_M = y_pred[:, 0]
+        P_F = backend.constant(1.0) - P_M
         θ_M = y_pred[:, 1]
         θ_F = y_pred[:, 2]
         σ_M = y_pred[:, 3]
@@ -140,7 +141,17 @@ class BaseNNet(metaclass=ABCMeta):
 
         return backend.mean(backend.switch(s == 0, L_M, L_F))
 
-    def theta_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
+    def P_M_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
+        """
+        男性である確率P_Mの評価関数
+        """
+
+        s = y_true[:, 1]
+        P_M = y_pred[:, 0]
+
+        return metrics.mean_squared_error(backend.constant(1.0) - s, P_M)
+
+    def θ_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
         年齢θの評価関数
         """
@@ -148,12 +159,15 @@ class BaseNNet(metaclass=ABCMeta):
         max_age = tf.constant(self.MAX_AGE)
         min_age = tf.constant(self.MIN_AGE)
 
-        theta_true = y_true[:, 0] * (max_age - min_age) + min_age
-        theta_pred = y_pred[:, 0] * (max_age - min_age) + min_age
+        y = y_true[:, 0] * (max_age - min_age) + min_age
+        s = y_true[:, 1]
 
-        return metrics.mean_absolute_error(theta_true, theta_pred)
+        θ_M = y_pred[:, 1] * (max_age - min_age) + min_age
+        θ_F = y_pred[:, 2] * (max_age - min_age) + min_age
 
-    def sigma_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
+        return backend.switch(s == 0, metrics.mean_absolute_error(y, θ_M), metrics.mean_absolute_error(y, θ_F))
+
+    def σ_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
         残差標準偏差σの評価関数
         """
@@ -161,11 +175,19 @@ class BaseNNet(metaclass=ABCMeta):
         max_age = tf.constant(self.MAX_AGE)
         min_age = tf.constant(self.MIN_AGE)
 
-        sigma_true = backend.abs(y_true[:, 0] - y_pred[:, 0]) * (max_age - min_age) + min_age
-        rho_pred = y_pred[:, 1]
-        sigma_pred = backend.sqrt(backend.exp(rho_pred)) * (max_age - min_age) + min_age
+        y = y_true[:, 0] * (max_age - min_age) + min_age
+        s = y_true[:, 1]
 
-        return metrics.mean_absolute_error(sigma_true, sigma_pred)
+        θ_M = y_pred[:, 1] * (max_age - min_age) + min_age
+        θ_F = y_pred[:, 2] * (max_age - min_age) + min_age
+        σ_M = y_pred[:, 3] * (max_age - min_age) + min_age
+        σ_F = y_pred[:, 4] * (max_age - min_age) + min_age
+
+        return backend.switch(
+            s == 0,
+            metrics.mean_absolute_error(backend.abs(y - θ_M), σ_M),
+            metrics.mean_absolute_error(backend.abs(y - θ_F), σ_F)
+        )
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         """
