@@ -132,9 +132,11 @@ class BaseNNet(metaclass=ABCMeta):
         σ_M = y_pred[:, 3]
         σ_F = y_pred[:, 4]
 
+        epsilon = backend.constant(backend.epsilon())
+
         # 男性の場合はp_M、女性の場合はp_Fの尤度を最大化する
-        L_M = backend.log(2 * np.pi * σ_M ** 2) + ((y - θ_M) ** 2) / (σ_M ** 2) - backend.log(P_M) * 2
-        L_F = backend.log(2 * np.pi * σ_F ** 2) + ((y - θ_F) ** 2) / (σ_F ** 2) - backend.log(P_F) * 2
+        L_M = backend.log(2 * np.pi * σ_M ** 2) + ((y - θ_M) ** 2) / (σ_M ** 2 + epsilon) - backend.log(P_M) * 2
+        L_F = backend.log(2 * np.pi * σ_F ** 2) + ((y - θ_F) ** 2) / (σ_F ** 2 + epsilon) - backend.log(P_F) * 2
 
         return backend.mean(backend.switch(s == 0, L_M, L_F))
 
