@@ -15,5 +15,5 @@ class ResNet(BaseNNet):
         """
 
         base_model = ResNet50(include_top=False, weights='imagenet', input_shape=self.INPUT_SHAPE, pooling="avg")
-        prediction = layers.Dense(2, use_bias=False, activation='relu')(base_model.output)
+        prediction = layers.Dense(5, use_bias=False, activation='relu')(base_model.output)
         self.model = Model(inputs=base_model.input, outputs=prediction)

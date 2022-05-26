@@ -38,9 +38,9 @@ class HumanService:
         humans = self.human_repository.select_all()
         humans_train, humans_test = self.human_repository.split_train_test(humans)
         x_train: np.ndarray = np.array([human.image for human in humans_train])
-        y_train: np.ndarray = np.array([human.age for human in humans_train])
+        y_train: np.ndarray = np.array([[human.age, human.gender] for human in humans_train])
         x_test: np.ndarray = np.array([human.image for human in humans_test])
-        y_test: np.ndarray = np.array([human.age for human in humans_test])
+        y_test: np.ndarray = np.array([[human.age, human.gender] for human in humans_test])
 
         # 学習
         print(Messages.START_TRAINING())

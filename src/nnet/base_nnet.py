@@ -58,7 +58,7 @@ class BaseNNet(metaclass=ABCMeta):
         self.model.compile(
             optimizer="adam",
             loss=self.loss,
-            metrics=[self.theta_metric, self.sigma_metric]
+            # metrics=[self.theta_metric, self.sigma_metric]
         )
 
     @abstractmethod
@@ -89,7 +89,7 @@ class BaseNNet(metaclass=ABCMeta):
         """
 
         y_train = sklearn.preprocessing.minmax_scale(y_train)
-        y_test = sklearn.preprocessing.minmax_scale(y_test)
+        y_test[:, 0] = sklearn.preprocessing.minmax_scale(y_test[:, 0])
 
         # チェックポイントを保存するコールパックを定義
         checkpoint_file = "%s/cp-{epoch}.h5" % self.CHECKPOINT_PATH
@@ -117,13 +117,26 @@ class BaseNNet(metaclass=ABCMeta):
 
         y_true = tf.cast(y_true, y_pred.dtype)
 
-        # theta: 推定年齢θ
-        # rho: ρ = log(σ^2)
-        theta_true = y_true[:, 0]
-        theta_pred = y_pred[:, 0]
-        rho_pred = y_pred[:, 1]
+        # y: 年齢
+        # s: 性別
+        y = y_true[:, 0]
+        s = y_true[:, 1]
 
-        return backend.mean(rho_pred + ((theta_true - theta_pred) ** 2) * backend.exp(-rho_pred))
+        # P_M: 男性である確率
+        # θ: 推定年齢
+        # σ: 残差標準偏差
+        P_M = backend.constant(1.0) - y_pred[:, 0]
+        P_F = backend.constant(1.0) - y_pred[:, 0]
+        θ_M = y_pred[:, 1]
+        θ_F = y_pred[:, 2]
+        σ_M = y_pred[:, 3]
+        σ_F = y_pred[:, 4]
+
+        # 男性の場合はp_M、女性の場合はp_Fの尤度を最大化する
+        L_M = backend.log(2 * np.pi * σ_M ** 2) + ((y - θ_M) ** 2) / (σ_M ** 2) - backend.log(P_M) * 2
+        L_F = backend.log(2 * np.pi * σ_F ** 2) + ((y - θ_F) ** 2) / (σ_F ** 2) - backend.log(P_F) * 2
+
+        return backend.mean(backend.switch(s == 0, L_M, L_F))
 
     def theta_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
@@ -151,16 +164,6 @@ class BaseNNet(metaclass=ABCMeta):
         sigma_pred = backend.sqrt(backend.exp(rho_pred)) * (max_age - min_age) + min_age
 
         return metrics.mean_absolute_error(sigma_true, sigma_pred)
-
-    def activation(self, x: np.ndarray):
-        """
-        活性化関数
-        """
-
-        theta = backend.sigmoid(x[:, 0])
-        rho = x[:, 1]
-
-        return tf.stack([theta, rho], 1)
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         """
