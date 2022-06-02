@@ -60,64 +60,141 @@ class HumanService:
         results_train = self.nnet.predict(np.array(x_train))
         results_test = self.nnet.predict(np.array(x_test))
 
-        theta_pred_list_train: list[float] = []
-        theta_true_list_train: list[float] = []
-        sigma_pred_list_train: list[float] = []
-        sigma_true_list_train: list[float] = []
-        theta_pred_list_test: list[float] = []
-        theta_true_list_test: list[float] = []
-        sigma_pred_list_test: list[float] = []
-        sigma_true_list_test: list[float] = []
+        s_pred_list_train: list[float] = []
+        s_true_list_train: list[float] = []
+        θ_M_pred_list_train: list[float] = []
+        θ_M_true_list_train: list[float] = []
+        θ_F_pred_list_train: list[float] = []
+        θ_F_true_list_train: list[float] = []
+        σ_M_pred_list_train: list[float] = []
+        σ_M_true_list_train: list[float] = []
+        σ_F_pred_list_train: list[float] = []
+        σ_F_true_list_train: list[float] = []
+        s_pred_list_test: list[float] = []
+        s_true_list_test: list[float] = []
+        θ_M_pred_list_test: list[float] = []
+        θ_M_true_list_test: list[float] = []
+        θ_F_pred_list_test: list[float] = []
+        θ_F_true_list_test: list[float] = []
+        σ_M_pred_list_test: list[float] = []
+        σ_M_true_list_test: list[float] = []
+        σ_F_pred_list_test: list[float] = []
+        σ_F_true_list_test: list[float] = []
 
         for i in range(len(results_train)):
             human = humans_train[i]
-            theta, sigma = results_train[i]
-            theta_true_list_train.append(abs(human.age))
-            theta_pred_list_train.append(abs(theta))
-            sigma_true_list_train.append(abs(human.age - theta))
-            sigma_pred_list_train.append(abs(sigma))
+            P_M, θ_M, θ_F, σ_M, σ_F = results_train[i]
+            s_pred_list_train.append(P_M)
+            s_true_list_train.append(human.gender)
+            if (human.gender == 0):
+                θ_M_pred_list_train.append(θ_M)
+                σ_M_pred_list_train.append(σ_M)
+                θ_M_true_list_train.append(human.age)
+                σ_M_true_list_train.append(abs(human.age - θ_M))
+            else:
+                θ_F_pred_list_train.append(θ_F)
+                σ_F_pred_list_train.append(σ_F)
+                θ_F_true_list_train.append(human.age)
+                σ_F_true_list_train.append(abs(human.age - θ_F))
 
         for i in range(len(results_test)):
             human = humans_test[i]
-            theta, sigma = results_test[i]
-            theta_true_list_test.append(abs(human.age))
-            theta_pred_list_test.append(abs(theta))
-            sigma_true_list_test.append(abs(human.age - theta))
-            sigma_pred_list_test.append(abs(sigma))
+            P_M, θ_M, θ_F, σ_M, σ_F = results_test[i]
+            s_pred_list_test.append(P_M)
+            s_true_list_test.append(human.gender)
+            if (human.gender == 0):
+                θ_M_pred_list_test.append(θ_M)
+                σ_M_pred_list_test.append(σ_M)
+                θ_M_true_list_test.append(human.age)
+                σ_M_true_list_test.append(abs(human.age - θ_M))
+            else:
+                θ_F_pred_list_test.append(θ_F)
+                σ_F_pred_list_test.append(σ_F)
+                θ_F_true_list_test.append(human.age)
+                σ_F_true_list_test.append(abs(human.age - θ_F))
+
+        # 性別sのヒートマップを作成
+        plt.figure()
+        plt.hist2d(s_pred_list_train, s_true_list_train, bins=100, range=[(0, 1), (0, 1)])
+        plt.xlabel("P_M")
+        plt.ylabel("s")
+        plt.xlim(0, 1)
+        plt.ylim(0, 1)
+        plt.savefig('analysis/θ_M_train.png')
+
+        plt.figure()
+        plt.hist2d(s_pred_list_test, s_true_list_test, bins=100, range=[(0, 1), (0, 1)])
+        plt.xlabel("P_M")
+        plt.ylabel("s")
+        plt.xlim(0, 1)
+        plt.ylim(0, 1)
+        plt.savefig('analysis/θ_M_train.png')
 
         # 推定年齢θのヒートマップを作成
         plt.figure()
-        plt.hist2d(theta_pred_list_train, theta_true_list_train, bins=116, range=[(0, 116), (0, 116)])
-        plt.xlabel("θ")
+        plt.hist2d(θ_M_pred_list_train, θ_M_true_list_train, bins=116, range=[(0, 116), (0, 116)])
+        plt.xlabel("θ_M")
         plt.ylabel("Age")
         plt.xlim(0, 116)
         plt.ylim(0, 116)
-        plt.savefig('analysis/theta_train.png')
+        plt.savefig('analysis/θ_M_train.png')
 
         plt.figure()
-        plt.hist2d(theta_pred_list_test, theta_true_list_test, bins=116, range=[(0, 116), (0, 116)])
-        plt.xlabel("θ")
+        plt.hist2d(θ_F_pred_list_train, θ_F_true_list_train, bins=116, range=[(0, 116), (0, 116)])
+        plt.xlabel("θ_M")
         plt.ylabel("Age")
         plt.xlim(0, 116)
         plt.ylim(0, 116)
-        plt.savefig('analysis/theta_test.png')
+        plt.savefig('analysis/θ_F_train.png')
+
+        plt.figure()
+        plt.hist2d(θ_M_pred_list_test, θ_M_true_list_test, bins=116, range=[(0, 116), (0, 116)])
+        plt.xlabel("θ_M")
+        plt.ylabel("Age")
+        plt.xlim(0, 116)
+        plt.ylim(0, 116)
+        plt.savefig('analysis/θ_M_train.png')
+
+        plt.figure()
+        plt.hist2d(θ_F_pred_list_test, θ_F_true_list_test, bins=116, range=[(0, 116), (0, 116)])
+        plt.xlabel("θ_M")
+        plt.ylabel("Age")
+        plt.xlim(0, 116)
+        plt.ylim(0, 116)
+        plt.savefig('analysis/θ_F_train.png')
 
         # 残差標準偏差σのヒートマップを作成
         plt.figure()
-        plt.hist2d(sigma_pred_list_train, sigma_true_list_train, bins=116, range=[(0, 20), (0, 50)])
-        plt.xlabel("σ")
-        plt.ylabel("|V-θ|")
+        plt.hist2d(σ_M_pred_list_train, σ_M_true_list_train, bins=116, range=[(0, 20), (0, 50)])
+        plt.xlabel("σ_M")
+        plt.ylabel("|y-θ_M|")
         plt.xlim(0, 20)
         plt.ylim(0, 50)
-        plt.savefig('analysis/sigma_train.png')
+        plt.savefig('analysis/σ_M_train.png')
 
         plt.figure()
-        plt.hist2d(sigma_pred_list_test, sigma_true_list_test, bins=116, range=[(0, 20), (0, 50)])
-        plt.xlabel("σ")
-        plt.ylabel("|V-θ|")
+        plt.hist2d(σ_F_pred_list_train, σ_F_true_list_train, bins=116, range=[(0, 20), (0, 50)])
+        plt.xlabel("σ_F")
+        plt.ylabel("|y-θ_F|")
         plt.xlim(0, 20)
         plt.ylim(0, 50)
-        plt.savefig('analysis/sigma_test.png')
+        plt.savefig('analysis/σ_F_train.png')
+
+        plt.figure()
+        plt.hist2d(σ_M_pred_list_test, σ_M_true_list_test, bins=116, range=[(0, 20), (0, 50)])
+        plt.xlabel("σ_M")
+        plt.ylabel("|y-θ_M|")
+        plt.xlim(0, 20)
+        plt.ylim(0, 50)
+        plt.savefig('analysis/σ_M_test.png')
+
+        plt.figure()
+        plt.hist2d(σ_F_pred_list_test, σ_F_true_list_test, bins=116, range=[(0, 20), (0, 50)])
+        plt.xlabel("σ_F")
+        plt.ylabel("|y-θ_F|")
+        plt.xlim(0, 20)
+        plt.ylim(0, 50)
+        plt.savefig('analysis/σ_F_test.png')
 
     def clear_checkpoint(self) -> None:
         """
