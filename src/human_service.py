@@ -88,7 +88,7 @@ class HumanService:
             P_M, θ_M, θ_F, σ_M, σ_F = results_train[i]
             s_pred_list_train.append(P_M)
             s_true_list_train.append(1 - human.gender)
-            if (human.gender == 0):
+            if (round(P_M) == 1):
                 θ_M_pred_list_train.append(θ_M)
                 σ_M_pred_list_train.append(σ_M)
                 θ_M_true_list_train.append(human.age)
@@ -104,7 +104,7 @@ class HumanService:
             P_M, θ_M, θ_F, σ_M, σ_F = results_test[i]
             s_pred_list_test.append(P_M)
             s_true_list_test.append(1 - human.gender)
-            if (human.gender == 0):
+            if (round(P_M) == 1):
                 θ_M_pred_list_test.append(θ_M)
                 σ_M_pred_list_test.append(σ_M)
                 θ_M_true_list_test.append(human.age)
