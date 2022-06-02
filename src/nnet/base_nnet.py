@@ -3,7 +3,8 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 import sklearn.preprocessing
 import tensorflow as tf
-from tensorflow.keras import Model, backend, metrics
+from tensorflow.keras import Model, metrics
+import tensorflow.keras.backend as K
 from tensorflow.keras.callbacks import ModelCheckpoint
 
 
@@ -127,19 +128,19 @@ class BaseNNet(metaclass=ABCMeta):
         # θ: 推定年齢
         # σ: 残差標準偏差
         P_M = y_pred[:, 0]
-        P_F = backend.constant(1.0) - P_M
+        P_F = K.constant(1.0) - P_M
         θ_M = y_pred[:, 1]
         θ_F = y_pred[:, 2]
         σ_M = y_pred[:, 3]
         σ_F = y_pred[:, 4]
 
-        epsilon = backend.constant(backend.epsilon())
+        epsilon = K.constant(K.epsilon())
 
         # 男性の場合はp_M、女性の場合はp_Fの尤度を最大化する
-        L_M = backend.log(2 * np.pi * σ_M ** 2) + ((y - θ_M) ** 2) / (σ_M ** 2 + epsilon) - backend.log(P_M) * 2
-        L_F = backend.log(2 * np.pi * σ_F ** 2) + ((y - θ_F) ** 2) / (σ_F ** 2 + epsilon) - backend.log(P_F) * 2
+        L_M = K.log(2 * np.pi * σ_M ** 2) + ((y - θ_M) ** 2) / (σ_M ** 2 + epsilon) - K.log(P_M + epsilon) * 2
+        L_F = K.log(2 * np.pi * σ_F ** 2) + ((y - θ_F) ** 2) / (σ_F ** 2 + epsilon) - K.log(P_F + epsilon) * 2
 
-        return backend.mean(backend.switch(s == 0, L_M, L_F))
+        return K.mean(K.switch(s == 0, L_M, L_F))
 
     def P_M_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
@@ -149,7 +150,7 @@ class BaseNNet(metaclass=ABCMeta):
         s = y_true[:, 1]
         P_M = y_pred[:, 0]
 
-        return metrics.mean_absolute_error(backend.constant(1.0) - s, P_M)
+        return metrics.mean_absolute_error(K.constant(1.0) - s, P_M)
 
     def θ_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
@@ -165,7 +166,11 @@ class BaseNNet(metaclass=ABCMeta):
         θ_M = y_pred[:, 1] * (max_age - min_age) + min_age
         θ_F = y_pred[:, 2] * (max_age - min_age) + min_age
 
-        return backend.switch(s == 0, metrics.mean_absolute_error(y, θ_M), metrics.mean_absolute_error(y, θ_F))
+        return K.switch(
+            K.greater_equal(K.constant(0), s),
+            metrics.mean_absolute_error(y, θ_M),
+            metrics.mean_absolute_error(y, θ_F),
+        )
 
     def σ_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
@@ -183,10 +188,10 @@ class BaseNNet(metaclass=ABCMeta):
         σ_M = y_pred[:, 3] * (max_age - min_age) + min_age
         σ_F = y_pred[:, 4] * (max_age - min_age) + min_age
 
-        return backend.switch(
+        return K.switch(
             s == 0,
-            metrics.mean_absolute_error(backend.abs(y - θ_M), σ_M),
-            metrics.mean_absolute_error(backend.abs(y - θ_F), σ_F)
+            metrics.mean_absolute_error(K.abs(y - θ_M), σ_M),
+            metrics.mean_absolute_error(K.abs(y - θ_F), σ_F)
         )
 
     def predict(self, x: np.ndarray) -> np.ndarray:
