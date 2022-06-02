@@ -115,10 +115,10 @@ class HumanService:
                 θ_F_true_list_test.append(human.age)
                 σ_F_true_list_test.append(abs(human.age - θ_F))
 
-        s_collect_rate_train = len(list(filter(lambda i: (1 - humans_train[i].gender) == round(s_pred_list_train[i]), range(len(humans_train))))) / len(humans_train)
-        s_collect_rate_test = len(list(filter(lambda i: (1 - humans_test[i].gender) == round(s_pred_list_test[i]), range(len(humans_test))))) / len(humans_test)
-        print("学習用データの性別正解率: %3.2f" % s_collect_rate_train)
-        print("検証用データの性別正解率: %3.2f" % s_collect_rate_test)
+        s_collect_rate_train = len(list(filter(lambda i: (1 - humans_train[i].gender) == round(s_pred_list_train[i]), range(len(humans_train))))) / len(humans_train) * 100.0
+        s_collect_rate_test = len(list(filter(lambda i: (1 - humans_test[i].gender) == round(s_pred_list_test[i]), range(len(humans_test))))) / len(humans_test) * 100.0
+        print("学習用データの性別正解率: %3.2f%%" % s_collect_rate_train)
+        print("検証用データの性別正解率: %3.2f%%" % s_collect_rate_test)
 
         # 性別sのヒートマップを作成
         plt.figure()
