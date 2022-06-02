@@ -148,7 +148,7 @@ class HumanService:
 
         plt.figure()
         plt.hist2d(θ_F_pred_list_train, θ_F_true_list_train, bins=116, range=[(0, 116), (0, 116)])
-        plt.xlabel("θ_M")
+        plt.xlabel("θ_F")
         plt.ylabel("Age")
         plt.xlim(0, 116)
         plt.ylim(0, 116)
@@ -164,7 +164,7 @@ class HumanService:
 
         plt.figure()
         plt.hist2d(θ_F_pred_list_test, θ_F_true_list_test, bins=116, range=[(0, 116), (0, 116)])
-        plt.xlabel("θ_M")
+        plt.xlabel("θ_F")
         plt.ylabel("Age")
         plt.xlim(0, 116)
         plt.ylim(0, 116)
