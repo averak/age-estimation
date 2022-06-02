@@ -172,19 +172,19 @@ class HumanService:
 
         # 残差標準偏差σのヒートマップを作成
         plt.figure()
-        plt.hist2d(σ_M_pred_list_train, σ_M_true_list_train, bins=116, range=[(0, 20), (0, 50)])
+        plt.hist2d(σ_M_pred_list_train, σ_M_true_list_train, bins=80, range=[(0, 5), (0, 10)])
         plt.xlabel("σ_M")
         plt.ylabel("|y-θ_M|")
-        plt.xlim(0, 20)
-        plt.ylim(0, 50)
+        plt.xlim(0, 5)
+        plt.ylim(0, 10)
         plt.savefig('analysis/σ_M_train.png')
 
         plt.figure()
-        plt.hist2d(σ_F_pred_list_train, σ_F_true_list_train, bins=116, range=[(0, 20), (0, 50)])
+        plt.hist2d(σ_F_pred_list_train, σ_F_true_list_train, bins=80, range=[(0, 5), (0, 10)])
         plt.xlabel("σ_F")
         plt.ylabel("|y-θ_F|")
-        plt.xlim(0, 20)
-        plt.ylim(0, 50)
+        plt.xlim(0, 5)
+        plt.ylim(0, 10)
         plt.savefig('analysis/σ_F_train.png')
 
         plt.figure()
