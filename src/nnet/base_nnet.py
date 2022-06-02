@@ -137,8 +137,8 @@ class BaseNNet(metaclass=ABCMeta):
         epsilon = K.constant(K.epsilon())
 
         # 男性の場合はp_M、女性の場合はp_Fの尤度を最大化する
-        L_M = K.log(2 * np.pi * σ_M ** 2) + ((y - θ_M) ** 2) / (σ_M ** 2 + epsilon) - K.log(P_M + epsilon) * 2
-        L_F = K.log(2 * np.pi * σ_F ** 2) + ((y - θ_F) ** 2) / (σ_F ** 2 + epsilon) - K.log(P_F + epsilon) * 2
+        L_M = K.log(2 * np.pi * σ_M ** 2 + epsilon) + ((y - θ_M) ** 2) / (σ_M ** 2 + epsilon) - K.log(P_M + epsilon) * 2
+        L_F = K.log(2 * np.pi * σ_F ** 2 + epsilon) + ((y - θ_F) ** 2) / (σ_F ** 2 + epsilon) - K.log(P_F + epsilon) * 2
 
         return K.mean(K.switch(s == 0, L_M, L_F))
 
@@ -166,8 +166,9 @@ class BaseNNet(metaclass=ABCMeta):
         θ_M = y_pred[:, 1] * (max_age - min_age) + min_age
         θ_F = y_pred[:, 2] * (max_age - min_age) + min_age
 
+        # FIXME: ValueError: Rank of `condition` should be less than or equal to rank of `then_expression` and `else_expression`. ndim(condition)=1, ndim(then_expression)=0
         return K.switch(
-            K.greater_equal(K.constant(0), s),
+            s == 0,
             metrics.mean_absolute_error(y, θ_M),
             metrics.mean_absolute_error(y, θ_F),
         )
@@ -188,6 +189,7 @@ class BaseNNet(metaclass=ABCMeta):
         σ_M = y_pred[:, 3] * (max_age - min_age) + min_age
         σ_F = y_pred[:, 4] * (max_age - min_age) + min_age
 
+        # FIXME: ValueError: Rank of `condition` should be less than or equal to rank of `then_expression` and `else_expression`. ndim(condition)=1, ndim(then_expression)=0
         return K.switch(
             s == 0,
             metrics.mean_absolute_error(K.abs(y - θ_M), σ_M),
@@ -196,11 +198,13 @@ class BaseNNet(metaclass=ABCMeta):
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         """
-        年齢θと残差標準偏差σを推定
+        [P_M, θ_M, θ_F, σ_M, σ_F]を推定
         """
 
         results = self.model.predict(x)
-        results[:, 0] = results[:, 0] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
-        results[:, 1] = np.sqrt(np.exp(results[:, 1])) * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 1] = results[:, 1] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 2] = results[:, 2] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 3] = np.sqrt(np.exp(results[:, 3])) * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 4] = np.sqrt(np.exp(results[:, 4])) * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
 
         return results
