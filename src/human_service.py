@@ -115,20 +115,20 @@ class HumanService:
 
         # 性別sのヒートマップを作成
         plt.figure()
-        plt.hist2d(s_pred_list_train, s_true_list_train, bins=100, range=[(0, 1), (0, 1)])
+        plt.hist2d(s_pred_list_train, s_true_list_train, bins=10, range=[(0, 1), (0, 1)])
         plt.xlabel("P_M")
         plt.ylabel("s")
         plt.xlim(0, 1)
         plt.ylim(0, 1)
-        plt.savefig('analysis/θ_M_train.png')
+        plt.savefig('analysis/s_train.png')
 
         plt.figure()
-        plt.hist2d(s_pred_list_test, s_true_list_test, bins=100, range=[(0, 1), (0, 1)])
+        plt.hist2d(s_pred_list_test, s_true_list_test, bins=10, range=[(0, 1), (0, 1)])
         plt.xlabel("P_M")
         plt.ylabel("s")
         plt.xlim(0, 1)
         plt.ylim(0, 1)
-        plt.savefig('analysis/θ_M_train.png')
+        plt.savefig('analysis/s_test.png')
 
         # 推定年齢θのヒートマップを作成
         plt.figure()
