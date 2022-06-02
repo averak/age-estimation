@@ -127,18 +127,25 @@ class BaseNNet(metaclass=ABCMeta):
         # P_M: 男性である確率
         # θ: 推定年齢
         # σ: 残差標準偏差
+        # ρ: ρ = log(σ^2)
         P_M = y_pred[:, 0]
         P_F = K.constant(1.0) - P_M
         θ_M = y_pred[:, 1]
         θ_F = y_pred[:, 2]
-        σ_M = y_pred[:, 3]
-        σ_F = y_pred[:, 4]
+
+        # ρ = log(σ^2)として変数変換
+        ρ_M = y_pred[:, 3]
+        ρ_F = y_pred[:, 4]
 
         epsilon = K.constant(K.epsilon())
 
         # 男性の場合はp_M、女性の場合はp_Fの尤度を最大化する
-        L_M = K.log(2 * np.pi * σ_M ** 2 + epsilon) + ((y - θ_M) ** 2) / (σ_M ** 2 + epsilon) - K.log(P_M + epsilon) * 2
-        L_F = K.log(2 * np.pi * σ_F ** 2 + epsilon) + ((y - θ_F) ** 2) / (σ_F ** 2 + epsilon) - K.log(P_F + epsilon) * 2
+        L_M = ρ_M + ((y - θ_M) ** 2) * K.exp(-ρ_M) - K.log(P_M + epsilon) * 2
+        L_F = ρ_F + ((y - θ_F) ** 2) * K.exp(-ρ_F) - K.log(P_F + epsilon) * 2
+
+        # NOTE: σを出力する場合のloss
+        # L_M = K.log(2 * np.pi * σ_M ** 2 + epsilon) + ((y - θ_M) ** 2) / (σ_M ** 2 + epsilon) - K.log(P_M + epsilon) * 2
+        # L_F = K.log(2 * np.pi * σ_F ** 2 + epsilon) + ((y - θ_F) ** 2) / (σ_F ** 2 + epsilon) - K.log(P_F + epsilon) * 2
 
         return K.mean(K.switch(s == 0, L_M, L_F))
 
@@ -195,6 +202,21 @@ class BaseNNet(metaclass=ABCMeta):
             metrics.mean_absolute_error(K.abs(y - θ_M), σ_M),
             metrics.mean_absolute_error(K.abs(y - θ_F), σ_F)
         )
+
+    def activation(self, y_pred: np.ndarray):
+        """
+        活性化関数
+        """
+
+        P_M = K.sigmoid(y_pred[:, 0])
+        θ_M = K.sigmoid(y_pred[:, 1])
+        θ_F = K.sigmoid(y_pred[:, 2])
+
+        # ρ = log(σ^2)として変数変換
+        ρ_M = y_pred[:, 3]
+        ρ_F = y_pred[:, 4]
+
+        return tf.stack([P_M, θ_M, θ_F, ρ_M, ρ_F], 1)
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         """
