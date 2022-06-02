@@ -160,7 +160,7 @@ class HumanService:
         plt.ylabel("Age")
         plt.xlim(0, 116)
         plt.ylim(0, 116)
-        plt.savefig('analysis/θ_M_train.png')
+        plt.savefig('analysis/θ_M_test.png')
 
         plt.figure()
         plt.hist2d(θ_F_pred_list_test, θ_F_true_list_test, bins=116, range=[(0, 116), (0, 116)])
@@ -168,7 +168,7 @@ class HumanService:
         plt.ylabel("Age")
         plt.xlim(0, 116)
         plt.ylim(0, 116)
-        plt.savefig('analysis/θ_F_train.png')
+        plt.savefig('analysis/θ_F_test.png')
 
         # 残差標準偏差σのヒートマップを作成
         plt.figure()
