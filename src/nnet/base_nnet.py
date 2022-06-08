@@ -89,7 +89,7 @@ class BaseNNet(metaclass=ABCMeta):
         学習
         """
 
-        y_train = sklearn.preprocessing.minmax_scale(y_train)
+        y_train[:, 0] = sklearn.preprocessing.minmax_scale(y_train[:, 0])
         y_test[:, 0] = sklearn.preprocessing.minmax_scale(y_test[:, 0])
 
         # チェックポイントを保存するコールパックを定義
