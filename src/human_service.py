@@ -85,7 +85,7 @@ class HumanService:
 
         for i in range(len(results_train)):
             human = humans_train[i]
-            P_M, θ_M, θ_F, σ_M, σ_F = results_train[i]
+            P_M, P_F, θ_M, θ_F, σ_M, σ_F = results_train[i]
             s_pred_list_train.append(P_M)
             s_true_list_train.append(1 - human.gender)
             if (round(P_M) == 1):
@@ -101,7 +101,7 @@ class HumanService:
 
         for i in range(len(results_test)):
             human = humans_test[i]
-            P_M, θ_M, θ_F, σ_M, σ_F = results_test[i]
+            P_M, P_F, θ_M, θ_F, σ_M, σ_F = results_test[i]
             s_pred_list_test.append(P_M)
             s_true_list_test.append(1 - human.gender)
             if (round(P_M) == 1):

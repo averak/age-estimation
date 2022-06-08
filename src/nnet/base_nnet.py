@@ -60,7 +60,7 @@ class BaseNNet(metaclass=ABCMeta):
             optimizer="adam",
             loss=self.loss,
             # metrics=[self.P_M_metric, self.θ_metric, self.σ_metric]
-            metrics=[self.P_M_metric]
+            metrics=[self.P_M_metric, self.P_F_metric]
         )
 
     @abstractmethod
@@ -125,23 +125,24 @@ class BaseNNet(metaclass=ABCMeta):
         s = y_true[:, 1]
 
         # P_M: 男性である確率
+        # P_F: 女性である確率
+        # P_M = exp(q_M) / (exp(q_M) + exp(q_F))
+        # P_F = exp(q_F) / (exp(q_M) + exp(q_F))
         # θ: 推定年齢
         # σ: 残差標準偏差
         # ρ: ρ = log(σ^2)
-        P_M = y_pred[:, 0]
-        P_F = K.constant(1.0) - P_M
-        θ_M = y_pred[:, 1]
-        θ_F = y_pred[:, 2]
+        q_M = y_pred[:, 0]
+        q_F = y_pred[:, 1]
+        θ_M = y_pred[:, 2]
+        θ_F = y_pred[:, 3]
 
         # ρ = log(σ^2)として変数変換
-        ρ_M = y_pred[:, 3]
-        ρ_F = y_pred[:, 4]
+        ρ_M = y_pred[:, 4]
+        ρ_F = y_pred[:, 5]
 
-        epsilon = K.constant(K.epsilon())
-
-        # 男性の場合はp_M、女性の場合はp_Fの尤度を最大化する
-        L_M = ρ_M + ((y - θ_M) ** 2) * K.exp(-ρ_M) - K.log(P_M + epsilon) * 2
-        L_F = ρ_F + ((y - θ_F) ** 2) * K.exp(-ρ_F) - K.log(P_F + epsilon) * 2
+        # 男性の場合はL_M、女性の場合はL_Fを最小化する
+        L_M = ρ_M + ((y - θ_M) ** 2) * K.exp(-ρ_M) - 2 * q_M + 2 * K.log(K.exp(q_M) + K.exp(q_F))
+        L_F = ρ_F + ((y - θ_F) ** 2) * K.exp(-ρ_F) - 2 * q_F + 2 * K.log(K.exp(q_M) + K.exp(q_F))
 
         # NOTE: σを出力する場合のloss
         # L_M = K.log(2 * np.pi * σ_M ** 2 + epsilon) + ((y - θ_M) ** 2) / (σ_M ** 2 + epsilon) - K.log(P_M + epsilon) * 2
@@ -155,9 +156,25 @@ class BaseNNet(metaclass=ABCMeta):
         """
 
         s = y_true[:, 1]
-        P_M = y_pred[:, 0]
+        q_M = y_pred[:, 0]
+        q_F = y_pred[:, 1]
+
+        P_M = K.exp(q_M) / (K.exp(q_M) + K.exp(q_F))
 
         return metrics.mean_absolute_error(K.constant(1.0) - s, P_M)
+
+    def P_F_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
+        """
+        女性である確率P_Fの評価関数
+        """
+
+        s = y_true[:, 1]
+        q_M = y_pred[:, 0]
+        q_F = y_pred[:, 1]
+
+        P_F = K.exp(q_F) / (K.exp(q_M) + K.exp(q_F))
+
+        return metrics.mean_absolute_error(s, P_F)
 
     def θ_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
@@ -209,14 +226,15 @@ class BaseNNet(metaclass=ABCMeta):
         """
 
         P_M = K.sigmoid(y_pred[:, 0])
-        θ_M = K.sigmoid(y_pred[:, 1])
-        θ_F = K.sigmoid(y_pred[:, 2])
+        P_F = K.sigmoid(y_pred[:, 1])
+        θ_M = K.sigmoid(y_pred[:, 2])
+        θ_F = K.sigmoid(y_pred[:, 3])
 
         # ρ = log(σ^2)として変数変換
-        ρ_M = y_pred[:, 3]
-        ρ_F = y_pred[:, 4]
+        ρ_M = y_pred[:, 4]
+        ρ_F = y_pred[:, 5]
 
-        return tf.stack([P_M, θ_M, θ_F, ρ_M, ρ_F], 1)
+        return tf.stack([P_M, P_F, θ_M, θ_F, ρ_M, ρ_F], 1)
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         """
@@ -224,9 +242,9 @@ class BaseNNet(metaclass=ABCMeta):
         """
 
         results = self.model.predict(x)
-        results[:, 1] = results[:, 1] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
-        results[:, 2] = results[:, 2] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
-        results[:, 3] = np.sqrt(np.exp(results[:, 3])) * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
-        results[:, 4] = np.sqrt(np.exp(results[:, 4])) * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 1] = results[:, 2] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 2] = results[:, 3] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 3] = np.sqrt(np.exp(results[:, 4])) * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 4] = np.sqrt(np.exp(results[:, 5])) * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
 
         return results

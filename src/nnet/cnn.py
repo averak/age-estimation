@@ -37,5 +37,5 @@ class CNN(BaseNNet):
         # self.model.add(layers.Dropout(0.5))
 
         # fully connected final layer
-        self.model.add(layers.Dense(5))
+        self.model.add(layers.Dense(6))
         self.model.add(layers.Activation(self.activation))
