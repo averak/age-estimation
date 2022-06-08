@@ -120,9 +120,14 @@ class HumanService:
         print("学習用データの性別正解率: %3.2f%%" % s_collect_rate_train)
         print("検証用データの性別正解率: %3.2f%%" % s_collect_rate_test)
 
+        # 人数分布のヒストグラムを作成
+        plt.figure()
+        plt.hist([human.age for human in humans], bins=116)
+        plt.savefig('analysis/age.png')
+
         # 性別sのヒートマップを作成
         plt.figure()
-        plt.hist2d(s_pred_list_train, s_true_list_train, bins=10, range=[(0, 1), (0, 1)])
+        plt.hist2d(s_pred_list_train, s_true_list_train, bins=10, range=[(0, 1), (0, 1)], cmin=1)
         plt.xlabel("P_M")
         plt.ylabel("s")
         plt.xlim(0, 1)
@@ -130,7 +135,7 @@ class HumanService:
         plt.savefig('analysis/s_train.png')
 
         plt.figure()
-        plt.hist2d(s_pred_list_test, s_true_list_test, bins=10, range=[(0, 1), (0, 1)])
+        plt.hist2d(s_pred_list_test, s_true_list_test, bins=10, range=[(0, 1), (0, 1)], cmin=1)
         plt.xlabel("P_M")
         plt.ylabel("s")
         plt.xlim(0, 1)
@@ -139,7 +144,7 @@ class HumanService:
 
         # 推定年齢θのヒートマップを作成
         plt.figure()
-        plt.hist2d(θ_M_pred_list_train, θ_M_true_list_train, bins=116, range=[(0, 116), (0, 116)])
+        plt.hist2d(θ_M_pred_list_train, θ_M_true_list_train, bins=116, range=[(0, 116), (0, 116)], cmin=1)
         plt.xlabel("θ_M")
         plt.ylabel("Age")
         plt.xlim(0, 116)
@@ -147,7 +152,7 @@ class HumanService:
         plt.savefig('analysis/θ_M_train.png')
 
         plt.figure()
-        plt.hist2d(θ_F_pred_list_train, θ_F_true_list_train, bins=116, range=[(0, 116), (0, 116)])
+        plt.hist2d(θ_F_pred_list_train, θ_F_true_list_train, bins=116, range=[(0, 116), (0, 116)], cmin=1)
         plt.xlabel("θ_F")
         plt.ylabel("Age")
         plt.xlim(0, 116)
@@ -155,7 +160,7 @@ class HumanService:
         plt.savefig('analysis/θ_F_train.png')
 
         plt.figure()
-        plt.hist2d(θ_M_pred_list_test, θ_M_true_list_test, bins=116, range=[(0, 116), (0, 116)])
+        plt.hist2d(θ_M_pred_list_test, θ_M_true_list_test, bins=116, range=[(0, 116), (0, 116)], cmin=1)
         plt.xlabel("θ_M")
         plt.ylabel("Age")
         plt.xlim(0, 116)
@@ -163,7 +168,7 @@ class HumanService:
         plt.savefig('analysis/θ_M_test.png')
 
         plt.figure()
-        plt.hist2d(θ_F_pred_list_test, θ_F_true_list_test, bins=116, range=[(0, 116), (0, 116)])
+        plt.hist2d(θ_F_pred_list_test, θ_F_true_list_test, bins=116, range=[(0, 116), (0, 116)], cmin=1)
         plt.xlabel("θ_F")
         plt.ylabel("Age")
         plt.xlim(0, 116)
@@ -172,7 +177,7 @@ class HumanService:
 
         # 残差標準偏差σのヒートマップを作成
         plt.figure()
-        plt.hist2d(σ_M_pred_list_train, σ_M_true_list_train, bins=80, range=[(0, 5), (0, 10)])
+        plt.hist2d(σ_M_pred_list_train, σ_M_true_list_train, bins=80, range=[(0, 5), (0, 10)], cmin=1)
         plt.xlabel("σ_M")
         plt.ylabel("|y-θ_M|")
         plt.xlim(0, 5)
@@ -180,7 +185,7 @@ class HumanService:
         plt.savefig('analysis/σ_M_train.png')
 
         plt.figure()
-        plt.hist2d(σ_F_pred_list_train, σ_F_true_list_train, bins=80, range=[(0, 5), (0, 10)])
+        plt.hist2d(σ_F_pred_list_train, σ_F_true_list_train, bins=80, range=[(0, 5), (0, 10)], cmin=1)
         plt.xlabel("σ_F")
         plt.ylabel("|y-θ_F|")
         plt.xlim(0, 5)
@@ -188,7 +193,7 @@ class HumanService:
         plt.savefig('analysis/σ_F_train.png')
 
         plt.figure()
-        plt.hist2d(σ_M_pred_list_test, σ_M_true_list_test, bins=116, range=[(0, 20), (0, 50)])
+        plt.hist2d(σ_M_pred_list_test, σ_M_true_list_test, bins=116, range=[(0, 20), (0, 50)], cmin=1)
         plt.xlabel("σ_M")
         plt.ylabel("|y-θ_M|")
         plt.xlim(0, 20)
@@ -196,7 +201,7 @@ class HumanService:
         plt.savefig('analysis/σ_M_test.png')
 
         plt.figure()
-        plt.hist2d(σ_F_pred_list_test, σ_F_true_list_test, bins=116, range=[(0, 20), (0, 50)])
+        plt.hist2d(σ_F_pred_list_test, σ_F_true_list_test, bins=116, range=[(0, 20), (0, 50)], cmin=1)
         plt.xlabel("σ_F")
         plt.ylabel("|y-θ_F|")
         plt.xlim(0, 20)
