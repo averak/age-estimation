@@ -32,7 +32,7 @@ class CNN(BaseNNet):
 
         # fully connected 1st layer
         self.model.add(layers.Flatten())
-        self.model.add(layers.Dense(128)
+        self.model.add(layers.Dense(128))
         self.model.add(layers.BatchNormalization())
         self.model.add(layers.Activation('relu'))
         # self.model.add(layers.Dropout(0.5))
