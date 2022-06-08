@@ -143,10 +143,6 @@ class BaseNNet(metaclass=ABCMeta):
         L_M = ρ_M + ((y - θ_M) ** 2) * K.exp(-ρ_M) - 2 * q_M + 2 * K.log(K.exp(q_M) + K.exp(q_F))
         L_F = ρ_F + ((y - θ_F) ** 2) * K.exp(-ρ_F) - 2 * q_F + 2 * K.log(K.exp(q_M) + K.exp(q_F))
 
-        # NOTE: σを出力する場合のloss
-        # L_M = K.log(2 * np.pi * σ_M ** 2 + epsilon) + ((y - θ_M) ** 2) / (σ_M ** 2 + epsilon) - K.log(P_M + epsilon) * 2
-        # L_F = K.log(2 * np.pi * σ_F ** 2 + epsilon) + ((y - θ_F) ** 2) / (σ_F ** 2 + epsilon) - K.log(P_F + epsilon) * 2
-
         return K.mean(K.switch(s == 0, L_M, L_F))
 
     def P_M_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
