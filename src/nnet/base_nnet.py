@@ -197,8 +197,8 @@ class BaseNNet(metaclass=ABCMeta):
 
         θ_M = y_pred[:, 2] * (max_age - min_age) + min_age
         θ_F = y_pred[:, 3] * (max_age - min_age) + min_age
-        σ_M = np.sqrt(np.exp(y_pred[:, 4])) * (max_age - min_age) + min_age
-        σ_F = np.sqrt(np.exp(y_pred[:, 5])) * (max_age - min_age) + min_age
+        σ_M = K.sqrt(K.exp(y_pred[:, 4])) * (max_age - min_age) + min_age
+        σ_F = K.sqrt(K.exp(y_pred[:, 5])) * (max_age - min_age) + min_age
 
         θ = K.switch(
             K.equal(s, 0.0),
@@ -218,16 +218,14 @@ class BaseNNet(metaclass=ABCMeta):
         活性化関数
         """
 
-        P_M = K.sigmoid(y_pred[:, 0])
-        P_F = K.sigmoid(y_pred[:, 1])
+        q_M = y_pred[:, 0]
+        q_F = y_pred[:, 1]
         θ_M = K.sigmoid(y_pred[:, 2])
         θ_F = K.sigmoid(y_pred[:, 3])
-
-        # ρ = log(σ^2)として変数変換
         ρ_M = y_pred[:, 4]
         ρ_F = y_pred[:, 5]
 
-        return tf.stack([P_M, P_F, θ_M, θ_F, ρ_M, ρ_F], 1)
+        return tf.stack([q_M, q_F, θ_M, θ_F, ρ_M, ρ_F], 1)
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         """
@@ -235,9 +233,14 @@ class BaseNNet(metaclass=ABCMeta):
         """
 
         results = self.model.predict(x)
-        results[:, 1] = results[:, 2] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
-        results[:, 2] = results[:, 3] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
-        results[:, 3] = np.sqrt(np.exp(results[:, 4])) * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
-        results[:, 4] = np.sqrt(np.exp(results[:, 5])) * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        q_M = results[:, 0]
+        q_F = results[:, 1]
+
+        results[:, 0] = K.exp(q_M) / (K.exp(q_M) + K.exp(q_F))
+        results[:, 1] = K.exp(q_F) / (K.exp(q_M) + K.exp(q_F))
+        results[:, 2] = results[:, 2] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 3] = results[:, 3] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 4] = np.sqrt(np.exp(results[:, 4])) * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 5] = np.sqrt(np.exp(results[:, 5])) * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
 
         return results
