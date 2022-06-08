@@ -240,7 +240,7 @@ class BaseNNet(metaclass=ABCMeta):
         results[:, 1] = K.exp(q_F) / (K.exp(q_M) + K.exp(q_F))
         results[:, 2] = results[:, 2] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
         results[:, 3] = results[:, 3] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
-        results[:, 4] = np.sqrt(np.exp(results[:, 4])) * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
-        results[:, 5] = np.sqrt(np.exp(results[:, 5])) * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+        results[:, 4] = np.sqrt(np.exp(results[:, 4])) * (self.MAX_AGE - self.MIN_AGE)
+        results[:, 5] = np.sqrt(np.exp(results[:, 5])) * (self.MAX_AGE - self.MIN_AGE)
 
         return results
