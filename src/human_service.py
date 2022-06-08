@@ -200,8 +200,6 @@ class HumanService:
         plt.colorbar()
         plt.xlabel("σ_M")
         plt.ylabel("|y-θ_M|")
-        plt.xlim(0, 5)
-        plt.ylim(0, 10)
         plt.savefig('analysis/σ_M_train.png')
 
         figure = plt.figure()
@@ -211,8 +209,6 @@ class HumanService:
         plt.colorbar()
         plt.xlabel("σ_F")
         plt.ylabel("|y-θ_F|")
-        plt.xlim(0, 5)
-        plt.ylim(0, 10)
         plt.savefig('analysis/σ_F_train.png')
 
         figure = plt.figure()
@@ -222,8 +218,6 @@ class HumanService:
         plt.colorbar()
         plt.xlabel("σ_M")
         plt.ylabel("|y-θ_M|")
-        plt.xlim(0, 20)
-        plt.ylim(0, 50)
         plt.savefig('analysis/σ_M_test.png')
 
         figure = plt.figure()
@@ -233,8 +227,6 @@ class HumanService:
         plt.colorbar()
         plt.xlabel("σ_F")
         plt.ylabel("|y-θ_F|")
-        plt.xlim(0, 20)
-        plt.ylim(0, 50)
         plt.savefig('analysis/σ_F_test.png')
 
     def clear_checkpoint(self) -> None:
