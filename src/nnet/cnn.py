@@ -1,4 +1,4 @@
-from tensorflow.keras import Sequential, layers
+from tensorflow.keras import Sequential, layers, regularizers
 
 from nnet.base_nnet import BaseNNet
 
@@ -18,20 +18,20 @@ class CNN(BaseNNet):
         self.model.add(layers.Input(shape=self.INPUT_SHAPE))
 
         # convolution 1st layer
-        self.model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu'))
+        self.model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu', kernel_regularizer=regularizers.l2(0.001)))
         self.model.add(layers.BatchNormalization())
         self.model.add(layers.MaxPool2D())
         # self.model.add(layers.Dropout(0.5))
 
         # convolution 2nd layer
-        self.model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu'))
+        self.model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu', kernel_regularizer=regularizers.l2(0.001)))
         self.model.add(layers.BatchNormalization())
         self.model.add(layers.MaxPool2D())
         # self.model.add(layers.Dropout(0.5))
 
         # fully connected 1st layer
         self.model.add(layers.Flatten())
-        self.model.add(layers.Dense(128, use_bias=False))
+        self.model.add(layers.Dense(32, kernel_regularizer=regularizers.l2(0.001)))
         self.model.add(layers.BatchNormalization())
         self.model.add(layers.Activation('relu'))
         # self.model.add(layers.Dropout(0.5))
