@@ -22,7 +22,7 @@ class BaseNNet(metaclass=ABCMeta):
     入力形状
     """
 
-    EPOCHS: int = 100
+    EPOCHS: int = 500
     """
     エポック数
     """
