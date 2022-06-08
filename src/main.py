@@ -1,10 +1,10 @@
 import argparse
 
 from human_service import HumanService
-from nnet.cnn import CNN
+from nnet.resnet import ResNet
 
 # アプリケーションサービスを作成
-human_service: HumanService = HumanService(CNN())
+human_service: HumanService = HumanService(ResNet())
 
 # アプリケーションのオプションを定義
 # --helpでヘルプを表示できます

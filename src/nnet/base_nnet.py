@@ -143,7 +143,7 @@ class BaseNNet(metaclass=ABCMeta):
         L_M = ρ_M + ((y - θ_M) ** 2) * K.exp(-ρ_M) - 2 * q_M + 2 * K.log(K.exp(q_M) + K.exp(q_F))
         L_F = ρ_F + ((y - θ_F) ** 2) * K.exp(-ρ_F) - 2 * q_F + 2 * K.log(K.exp(q_M) + K.exp(q_F))
 
-        return K.mean(K.switch(s == 0, L_M, L_F))
+        return K.mean(K.switch(K.equal(s, 0.0), L_M, L_F))
 
     def P_M_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
