@@ -16,25 +16,26 @@ class CNN(BaseNNet):
         self.model = Sequential()
 
         self.model.add(layers.Input(shape=self.INPUT_SHAPE))
+        self.model.add(layers.Dropout(0.2))
 
         # convolution 1st layer
         self.model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu', kernel_regularizer=regularizers.l2(0.001)))
         self.model.add(layers.BatchNormalization())
         self.model.add(layers.MaxPool2D())
-        # self.model.add(layers.Dropout(0.5))
+        self.model.add(layers.Dropout(0.5))
 
         # convolution 2nd layer
         self.model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu', kernel_regularizer=regularizers.l2(0.001)))
         self.model.add(layers.BatchNormalization())
         self.model.add(layers.MaxPool2D())
-        # self.model.add(layers.Dropout(0.5))
+        self.model.add(layers.Dropout(0.5))
 
         # fully connected 1st layer
         self.model.add(layers.Flatten())
         self.model.add(layers.Dense(32, kernel_regularizer=regularizers.l2(0.001)))
         self.model.add(layers.BatchNormalization())
         self.model.add(layers.Activation('relu'))
-        # self.model.add(layers.Dropout(0.5))
+        self.model.add(layers.Dropout(0.5))
 
         # fully connected final layer
         self.model.add(layers.Dense(6))
