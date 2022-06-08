@@ -19,13 +19,7 @@ class CNN(BaseNNet):
         self.model.add(layers.Dropout(0.2))
 
         # convolution 1st layer
-        self.model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu', kernel_regularizer=regularizers.l2(0.001)))
-        self.model.add(layers.BatchNormalization())
-        self.model.add(layers.MaxPool2D())
-        self.model.add(layers.Dropout(0.5))
-
-        # convolution 2nd layer
-        self.model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu', kernel_regularizer=regularizers.l2(0.001)))
+        self.model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu', kernel_regularizer=regularizers.l2(0.001)))
         self.model.add(layers.BatchNormalization())
         self.model.add(layers.MaxPool2D())
         self.model.add(layers.Dropout(0.5))

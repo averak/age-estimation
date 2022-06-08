@@ -59,8 +59,7 @@ class BaseNNet(metaclass=ABCMeta):
         self.model.compile(
             optimizer="adam",
             loss=self.loss,
-            # metrics=[self.P_M_metric, self.θ_metric, self.σ_metric]
-            metrics=[self.P_M_metric, self.P_F_metric]
+            metrics=[self.P_M_metric, self.θ_metric, self.σ_metric]
         )
 
     @abstractmethod
@@ -163,19 +162,6 @@ class BaseNNet(metaclass=ABCMeta):
 
         return metrics.mean_absolute_error(K.constant(1.0) - s, P_M)
 
-    def P_F_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
-        """
-        女性である確率P_Fの評価関数
-        """
-
-        s = y_true[:, 1]
-        q_M = y_pred[:, 0]
-        q_F = y_pred[:, 1]
-
-        P_F = K.exp(q_F) / (K.exp(q_M) + K.exp(q_F))
-
-        return metrics.mean_absolute_error(s, P_F)
-
     def θ_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
         年齢θの評価関数
@@ -187,15 +173,16 @@ class BaseNNet(metaclass=ABCMeta):
         y = y_true[:, 0] * (max_age - min_age) + min_age
         s = y_true[:, 1]
 
-        θ_M = y_pred[:, 1] * (max_age - min_age) + min_age
-        θ_F = y_pred[:, 2] * (max_age - min_age) + min_age
+        θ_M = y_pred[:, 2] * (max_age - min_age) + min_age
+        θ_F = y_pred[:, 3] * (max_age - min_age) + min_age
 
-        # FIXME: ValueError: Rank of `condition` should be less than or equal to rank of `then_expression` and `else_expression`. ndim(condition)=1, ndim(then_expression)=0
-        return K.switch(
-            s == 0,
-            metrics.mean_absolute_error(y, θ_M),
-            metrics.mean_absolute_error(y, θ_F),
+        θ = K.switch(
+            K.equal(s, 0.0),
+            θ_M,
+            θ_F,
         )
+
+        return metrics.mean_absolute_error(y, θ)
 
     def σ_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
@@ -208,17 +195,23 @@ class BaseNNet(metaclass=ABCMeta):
         y = y_true[:, 0] * (max_age - min_age) + min_age
         s = y_true[:, 1]
 
-        θ_M = y_pred[:, 1] * (max_age - min_age) + min_age
-        θ_F = y_pred[:, 2] * (max_age - min_age) + min_age
-        σ_M = y_pred[:, 3] * (max_age - min_age) + min_age
-        σ_F = y_pred[:, 4] * (max_age - min_age) + min_age
+        θ_M = y_pred[:, 2] * (max_age - min_age) + min_age
+        θ_F = y_pred[:, 3] * (max_age - min_age) + min_age
+        σ_M = np.sqrt(np.exp(y_pred[:, 4])) * (max_age - min_age) + min_age
+        σ_F = np.sqrt(np.exp(y_pred[:, 5])) * (max_age - min_age) + min_age
 
-        # FIXME: ValueError: Rank of `condition` should be less than or equal to rank of `then_expression` and `else_expression`. ndim(condition)=1, ndim(then_expression)=0
-        return K.switch(
-            s == 0,
-            metrics.mean_absolute_error(K.abs(y - θ_M), σ_M),
-            metrics.mean_absolute_error(K.abs(y - θ_F), σ_F)
+        θ = K.switch(
+            K.equal(s, 0.0),
+            θ_M,
+            θ_F,
         )
+        σ = K.switch(
+            K.equal(s, 0.0),
+            σ_M,
+            σ_F,
+        )
+
+        return metrics.mean_absolute_error(K.abs(y - θ), σ)
 
     def activation(self, y_pred: np.ndarray):
         """
