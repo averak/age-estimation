@@ -22,7 +22,7 @@ class Callback(callbacks.Callback):
         for i in range(number_of_layers):
             self.model.layers[i].trainable = True
 
-        split_border = 6
+        split_border = 3
 
         # バッチ単位でモデルのフリーズ箇所を切り替える
         if batch % 2 == 0:

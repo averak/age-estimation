@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import Model, metrics
+from tensorflow.keras import Model, metrics, optimizers
 import tensorflow.keras.backend as K
 from tensorflow.keras.callbacks import ModelCheckpoint
 
@@ -57,8 +57,9 @@ class BaseNNet(metaclass=ABCMeta):
     def __init__(self):
         self.make_model()
 
+        adam = optimizers.Adam(lr=0.01)
         self.model.compile(
-            optimizer="adam",
+            optimizer=adam,
             loss=self.loss,
             metrics=[self.P_M_metric, self.θ_metric, self.σ_metric]
         )
@@ -143,7 +144,7 @@ class BaseNNet(metaclass=ABCMeta):
         L_M = ρ_M + ((y - θ_M) ** 2) * K.exp(-ρ_M) - 2 * q_M + 2 * K.log(K.exp(q_M) + K.exp(q_F))
         L_F = ρ_F + ((y - θ_F) ** 2) * K.exp(-ρ_F) - 2 * q_F + 2 * K.log(K.exp(q_M) + K.exp(q_F))
 
-        return K.mean(K.switch(K.equal(s, 0.0), L_M, L_F))
+        return K.mean(K.switch(s == 0, L_M, L_F))
 
     def P_M_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
@@ -151,6 +152,7 @@ class BaseNNet(metaclass=ABCMeta):
         """
 
         s = y_true[:, 1]
+
         q_M = y_pred[:, 0]
         q_F = y_pred[:, 1]
 
@@ -170,7 +172,7 @@ class BaseNNet(metaclass=ABCMeta):
         θ_F = y_pred[:, 3]
 
         θ = K.switch(
-            K.equal(s, 0.0),
+            s == 0,
             θ_M,
             θ_F,
         )
@@ -191,12 +193,12 @@ class BaseNNet(metaclass=ABCMeta):
         σ_F = K.sqrt(K.exp(y_pred[:, 5]))
 
         θ = K.switch(
-            K.equal(s, 0.0),
+            s == 0,
             θ_M,
             θ_F,
         )
         σ = K.switch(
-            K.equal(s, 0.0),
+            s == 0,
             σ_M,
             σ_F,
         )
