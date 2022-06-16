@@ -1,7 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
-import sklearn.preprocessing
 import tensorflow as tf
 from tensorflow.keras import Model, metrics
 import tensorflow.keras.backend as K
@@ -92,9 +91,6 @@ class BaseNNet(metaclass=ABCMeta):
         学習
         """
 
-        y_train[:, 0] = sklearn.preprocessing.minmax_scale(y_train[:, 0])
-        y_test[:, 0] = sklearn.preprocessing.minmax_scale(y_test[:, 0])
-
         # チェックポイントを保存するコールパックを定義
         checkpoint_file = "%s/cp-{epoch}.h5" % self.CHECKPOINT_PATH
         checkpoint_callback = ModelCheckpoint(
@@ -133,18 +129,19 @@ class BaseNNet(metaclass=ABCMeta):
         # P_F = exp(q_F) / (exp(q_M) + exp(q_F))
         # θ: 推定年齢
         # σ: 残差標準偏差
+        # ρ: ρ = log(σ^2)
         q_M = y_pred[:, 0]
         q_F = y_pred[:, 1]
         θ_M = y_pred[:, 2]
         θ_F = y_pred[:, 3]
-        σ_M = y_pred[:, 4]
-        σ_F = y_pred[:, 5]
 
-        epsilon = K.constant(K.epsilon())
+        # ρ = log(σ^2)として変数変換
+        ρ_M = y_pred[:, 4]
+        ρ_F = y_pred[:, 5]
 
         # 男性の場合はL_M、女性の場合はL_Fを最小化する
-        L_M = K.log(2 * np.pi * (σ_M ** 2)) + ((y - θ_M) ** 2) / (σ_M ** 2 + epsilon) - 2 * q_M + 2 * K.log(K.exp(q_M) + K.exp(q_F))
-        L_F = K.log(2 * np.pi * (σ_F ** 2)) + ((y - θ_F) ** 2) / (σ_F ** 2 + epsilon) - 2 * q_F + 2 * K.log(K.exp(q_M) + K.exp(q_F))
+        L_M = ρ_M + ((y - θ_M) ** 2) * K.exp(-ρ_M) - 2 * q_M + 2 * K.log(K.exp(q_M) + K.exp(q_F))
+        L_F = ρ_F + ((y - θ_F) ** 2) * K.exp(-ρ_F) - 2 * q_F + 2 * K.log(K.exp(q_M) + K.exp(q_F))
 
         return K.mean(K.switch(K.equal(s, 0.0), L_M, L_F))
 
@@ -166,20 +163,14 @@ class BaseNNet(metaclass=ABCMeta):
         年齢θの評価関数
         """
 
-        max_age = K.constant(self.MAX_AGE)
-        min_age = K.constant(self.MIN_AGE)
+        y = y_true[:, 0]
+        s = y_true[:, 1]
 
-        y = y_true[:, 0] * (max_age - min_age) + max_age
-
-        q_M = y_pred[:, 0]
-        q_F = y_pred[:, 1]
-        P_M = K.exp(q_M) / (K.exp(q_M) + K.exp(q_F))
-
-        θ_M = y_pred[:, 2] * (max_age - min_age) + max_age
-        θ_F = y_pred[:, 3] * (max_age - min_age) + max_age
+        θ_M = y_pred[:, 2]
+        θ_F = y_pred[:, 3]
 
         θ = K.switch(
-            P_M > 0.5,
+            K.equal(s, 0.0),
             θ_M,
             θ_F,
         )
@@ -191,27 +182,21 @@ class BaseNNet(metaclass=ABCMeta):
         残差標準偏差σの評価関数
         """
 
-        max_age = K.constant(self.MAX_AGE)
-        min_age = K.constant(self.MIN_AGE)
+        y = y_true[:, 0]
+        s = y_true[:, 1]
 
-        y = y_true[:, 0] * (max_age - min_age) + max_age
-
-        q_M = y_pred[:, 0]
-        q_F = y_pred[:, 1]
-        P_M = K.exp(q_M) / (K.exp(q_M) + K.exp(q_F))
-
-        θ_M = y_pred[:, 2] * (max_age - min_age) + max_age
-        θ_F = y_pred[:, 3] * (max_age - min_age) + max_age
-        σ_M = y_pred[:, 4] * (max_age - min_age)
-        σ_F = y_pred[:, 5] * (max_age - min_age)
+        θ_M = y_pred[:, 2]
+        θ_F = y_pred[:, 3]
+        σ_M = K.sqrt(K.exp(y_pred[:, 4]))
+        σ_F = K.sqrt(K.exp(y_pred[:, 5]))
 
         θ = K.switch(
-            P_M > 0.5,
+            K.equal(s, 0.0),
             θ_M,
             θ_F,
         )
         σ = K.switch(
-            P_M > 0.5,
+            K.equal(s, 0.0),
             σ_M,
             σ_F,
         )
@@ -225,12 +210,12 @@ class BaseNNet(metaclass=ABCMeta):
 
         q_M = y_pred[:, 0]
         q_F = y_pred[:, 1]
-        θ_M = K.sigmoid(y_pred[:, 2])
-        θ_F = K.sigmoid(y_pred[:, 3])
-        σ_M = K.sigmoid(y_pred[:, 4])
-        σ_F = K.sigmoid(y_pred[:, 5])
+        θ_M = y_pred[:, 2]
+        θ_F = y_pred[:, 3]
+        ρ_M = y_pred[:, 4]
+        ρ_F = y_pred[:, 5]
 
-        return tf.stack([q_M, q_F, θ_M, θ_F, σ_M, σ_F], 1)
+        return tf.stack([q_M, q_F, θ_M, θ_F, ρ_M, ρ_F], 1)
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         """
