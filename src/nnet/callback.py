@@ -22,11 +22,14 @@ class Callback(callbacks.Callback):
         for i in range(number_of_layers):
             self.model.layers[i].trainable = True
 
+        split_border = 6
+
         # バッチ単位でモデルのフリーズ箇所を切り替える
         if batch % 2 == 0:
-            # 出力層をフリーズ
-            self.model.layers[number_of_layers - 1].trainable = False
+            # 特徴抽出部をフリーズ
+            for i in range(number_of_layers - split_border):
+                self.model.layers[number_of_layers - i - 1].trainable = False
         else:
-            # 出力層手前までフリーズ
-            for i in range(number_of_layers - 1):
+            # 識別部をフリーズ
+            for i in range(split_border):
                 self.model.layers[i].trainable = False
