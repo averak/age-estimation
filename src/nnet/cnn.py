@@ -1,4 +1,4 @@
-from tensorflow.keras import Sequential, layers, regularizers
+from tensorflow.keras import Sequential, layers
 
 from nnet.base_nnet import BaseNNet
 
