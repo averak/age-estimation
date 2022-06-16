@@ -1,4 +1,7 @@
-from tensorflow.keras import callbacks
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras import callbacks, optimizers
+import tensorflow.keras.backend as K
 from tensorflow.python.keras.engine.training import Model
 
 
@@ -31,5 +34,5 @@ class Callback(callbacks.Callback):
                 self.model.layers[number_of_layers - i - 1].trainable = False
         else:
             # 識別部をフリーズ
-            for i in range(split_border):
+            for i in range(split_border + 1):
                 self.model.layers[i].trainable = False

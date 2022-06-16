@@ -57,7 +57,7 @@ class BaseNNet(metaclass=ABCMeta):
     def __init__(self):
         self.make_model()
 
-        adam = optimizers.Adam(lr=0.01)
+        adam = optimizers.Adam(learning_rate=0.001)
         self.model.compile(
             optimizer=adam,
             loss=self.loss,
