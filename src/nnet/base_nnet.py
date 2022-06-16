@@ -6,6 +6,8 @@ from tensorflow.keras import Model, metrics
 import tensorflow.keras.backend as K
 from tensorflow.keras.callbacks import ModelCheckpoint
 
+from nnet.callback import Callback
+
 
 class BaseNNet(metaclass=ABCMeta):
     """
@@ -60,6 +62,7 @@ class BaseNNet(metaclass=ABCMeta):
             loss=self.loss,
             metrics=[self.P_M_metric, self.θ_metric, self.σ_metric]
         )
+        self.model.summary()
 
     @abstractmethod
     def make_model(self) -> None:
@@ -104,7 +107,7 @@ class BaseNNet(metaclass=ABCMeta):
             epochs=self.EPOCHS,
             batch_size=self.BATCH_SIZE,
             validation_data=(x_test, y_test),
-            callbacks=[checkpoint_callback]
+            callbacks=[checkpoint_callback, Callback()]
         )
 
     def loss(self, y_true: np.ndarray, y_pred: np.ndarray):
