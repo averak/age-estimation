@@ -98,6 +98,9 @@ class BaseNNet_V1(BaseNNet):
 
         results = self.model.predict(x)
 
+        results[:, 0] = results[:, 0]
+        results[:, 1] = np.sqrt(np.exp(results[:, 1]))
+
         if self.IS_NORMALIZE:
             results[:, 0] = results[:, 0] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
             results[:, 1] = results[:, 1] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
