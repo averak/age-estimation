@@ -14,8 +14,8 @@ argument_parser.add_argument('-e', '--estimate',
                              help='推定',
                              action='store_true')
 argument_parser.add_argument('-v', '--version', help='バージョン(1 or 2)', type=int, default=1)
-argument_parser.add_argument('-c', '--callback', help='コールバックするか', action='store_true')
 argument_parser.add_argument('-n', '--normalize', help='正規化するか', action='store_true')
+argument_parser.add_argument('-c', '--callback', help='コールバックするか', action='store_true')
 arguments = argument_parser.parse_args()
 
 # アプリケーションサービスを作成
