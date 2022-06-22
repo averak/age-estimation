@@ -18,7 +18,7 @@ class CNN_V1(BaseNNet_V1):
         self.model.add(layers.Input(shape=self.INPUT_SHAPE))
 
         # convolution 1st layer
-        self.model.add(layers.Conv2D(16, (3, 3), padding='same', activation='relu'))
+        self.model.add(layers.Conv2D(32, (3, 3), padding='same', activation='relu'))
         self.model.add(layers.BatchNormalization())
         self.model.add(layers.MaxPool2D())
 
