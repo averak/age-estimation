@@ -34,3 +34,13 @@ class Callback(callbacks.Callback):
             # 識別部をフリーズ
             for i in range(split_border + 1):
                 self.model.layers[i].trainable = False
+
+    def on_train_batch_end(self, batch: int, logs: dict):
+        """
+        訓練データのバッチ終了時
+        """
+
+        number_of_layers = len(self.model.layers)
+
+        for i in range(number_of_layers):
+            self.model.layers[i].trainable = True
