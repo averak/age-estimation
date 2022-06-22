@@ -5,6 +5,7 @@ import tensorflow.keras.backend as K
 from tensorflow.keras.callbacks import ModelCheckpoint, CSVLogger
 
 from nnet.callback import Callback
+from nnet.data_generator import DataGenerator
 
 
 class BaseNNet:
@@ -137,16 +138,11 @@ class BaseNNet:
         callbacks = []
         if self.IS_CALLBACK:
             callbacks = [checkpoint_callback, csv_logger, Callback()]
-            shuffle = False
         else:
             callbacks = [checkpoint_callback, csv_logger]
-            shuffle = True
-        self.model.fit(
-            x_train,
-            y_train,
-            shuffle=shuffle,
+        self.model.fit_generator(
+            DataGenerator(x_train, y_train, self.BATCH_SIZE),
             epochs=self.EPOCHS,
-            batch_size=self.BATCH_SIZE,
             validation_data=(x_test, y_test),
             callbacks=callbacks
         )
