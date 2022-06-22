@@ -83,7 +83,7 @@ class BaseNNet_V2(BaseNNet):
         θ_M = y_pred[:, 2]
         θ_F = y_pred[:, 3]
 
-        if self.IS_NORMALIZED:
+        if self.IS_NORMALIZE:
             y = y * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
             θ_M = θ_M * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
             θ_F = θ_F * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
@@ -109,7 +109,7 @@ class BaseNNet_V2(BaseNNet):
         σ_M = K.sqrt(K.exp(y_pred[:, 4]))
         σ_F = K.sqrt(K.exp(y_pred[:, 5]))
 
-        if self.IS_NORMALIZED:
+        if self.IS_NORMALIZE:
             y = y * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
             θ_M = θ_M * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
             θ_F = θ_F * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
@@ -163,7 +163,7 @@ class BaseNNet_V2(BaseNNet):
         ρ_M = y_pred[:, 4]
         ρ_F = y_pred[:, 5]
 
-        if self.IS_NORMALIZED:
+        if self.IS_NORMALIZE:
             θ_M = K.sigmoid(θ_M)
             θ_F = K.sigmoid(θ_F)
 
@@ -185,7 +185,7 @@ class BaseNNet_V2(BaseNNet):
         results[:, 4] = np.sqrt(np.exp(results[:, 4]))
         results[:, 5] = np.sqrt(np.exp(results[:, 5]))
 
-        if self.IS_NORMALIZED:
+        if self.IS_NORMALIZE:
             results[:, 2] = results[:, 2] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
             results[:, 3] = results[:, 3] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
             results[:, 4] = results[:, 4] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE

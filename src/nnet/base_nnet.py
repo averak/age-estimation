@@ -67,12 +67,20 @@ class BaseNNet:
     最大年齢のTensor
     """
 
-    IS_NORMALIZED = True
+    IS_NORMALIZE = True
     """
     正規化するか
     """
 
-    def __init__(self):
+    IS_CALLBACK: bool = True
+    """
+    コールバックするか
+    """
+
+    def __init__(self, normalize: bool, callback: bool):
+        self.IS_NORMALIZE = normalize
+        self.IS_CALLBACK = callback
+
         self.make_model()
         self.compile_model()
 
@@ -102,7 +110,7 @@ class BaseNNet:
         学習
         """
 
-        if self.IS_NORMALIZED:
+        if self.IS_NORMALIZE:
             y_train[:, 0] = sklearn.preprocessing.minmax_scale(y_train[:, 0])
             y_test[:, 0] = sklearn.preprocessing.minmax_scale(y_test[:, 0])
 
@@ -116,14 +124,21 @@ class BaseNNet:
         self.model.save_weights(checkpoint_file.format(epoch=0))
 
         # 学習
+        callbacks = []
+        if self.IS_CALLBACK:
+            callbacks = [checkpoint_callback, Callback()]
+            shuffle = False
+        else:
+            callbacks = [checkpoint_callback]
+            shuffle = True
         self.model.fit(
             x_train,
             y_train,
-            shuffle=False,
+            shuffle=shuffle,
             epochs=self.EPOCHS,
             batch_size=self.BATCH_SIZE,
             validation_data=(x_test, y_test),
-            callbacks=[checkpoint_callback, Callback()]
+            callbacks=callbacks
         )
 
     def predict(self, x: np.ndarray) -> np.ndarray:

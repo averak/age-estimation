@@ -13,24 +13,21 @@ argument_parser.add_argument('-t', '--train',
 argument_parser.add_argument('-e', '--estimate',
                              help='推定',
                              action='store_true')
-argument_parser.add_argument('-c', '--clear',
-                             help='チェックポイントを削除',
-                             action='store_true')
 argument_parser.add_argument('-v', '--version', help='バージョン(1 or 2)', type=int, default=1)
+argument_parser.add_argument('-c', '--callback', help='コールバックするか', action='store_true')
+argument_parser.add_argument('-n', '--normalize', help='正規化するか', action='store_true')
 arguments = argument_parser.parse_args()
 
 # アプリケーションサービスを作成
 if arguments.version == 1:
-    nnet = CNN_V1()
+    nnet = CNN_V1(arguments.normalize, arguments.callback)
 else:
-    nnet = CNN_V2()
+    nnet = CNN_V2(arguments.normalize, arguments.callback)
 human_service = HumanService(nnet)
 
 if arguments.train:
     human_service.train()
 elif arguments.estimate:
     human_service.estimate()
-elif arguments.clear:
-    human_service.clear_checkpoint()
 else:
     argument_parser.print_help()

@@ -50,7 +50,7 @@ class BaseNNet_V1(BaseNNet):
 
         θ = y_pred[:, 0]
 
-        if self.IS_NORMALIZED:
+        if self.IS_NORMALIZE:
             y = y * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
             θ = θ * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
 
@@ -66,7 +66,7 @@ class BaseNNet_V1(BaseNNet):
         θ = y_pred[:, 0]
         σ = y_pred[:, 1]
 
-        if self.IS_NORMALIZED:
+        if self.IS_NORMALIZE:
             y = y * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
             θ = θ * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
             σ = σ * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR)
@@ -81,7 +81,7 @@ class BaseNNet_V1(BaseNNet):
         θ = y_pred[:, 0]
         σ = y_pred[:, 1]
 
-        if self.IS_NORMALIZED:
+        if self.IS_NORMALIZE:
             θ = K.sigmoid(θ)
             σ = K.sigmoid(σ)
 
@@ -94,7 +94,7 @@ class BaseNNet_V1(BaseNNet):
 
         results = self.model.predict(x)
 
-        if self.IS_NORMALIZED:
+        if self.IS_NORMALIZE:
             results[:, 0] = results[:, 0] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
             results[:, 1] = results[:, 1] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
 
