@@ -1,3 +1,4 @@
+import csv
 import glob
 import os
 
@@ -236,6 +237,68 @@ class HumanService:
         plt.xlim(0, 50)
         plt.ylim(0, 50)
         plt.savefig('analysis/σ_F_test.png')
+
+    def analytics_log(self) -> None:
+        """
+        学習ログを分析
+        """
+
+        loss_list: list[float] = []
+        val_loss_list: list[float] = []
+        P_M_list: list[float] = []
+        val_P_M_list: list[float] = []
+        θ_list: list[float] = []
+        val_θ_list: list[float] = []
+        σ_list: list[float] = []
+        val_σ_list: list[float] = []
+
+        with open('analysis/log.csv', 'r') as f:
+            # ヘッダーを読み飛ばす
+            next(csv.reader(f))
+
+            for row in csv.reader(f):
+                columns = [float(column) for column in row]
+                epoch, P_M_metric, loss, val_P_M_metric, val_loss, val_θ_metric, val_σ_metric, θ_metric, σ_metric = columns
+                loss_list.append(loss)
+                val_loss_list.append(val_loss)
+                P_M_list.append(P_M_metric)
+                val_P_M_list.append(val_P_M_metric)
+                θ_list.append(θ_metric)
+                val_θ_list.append(val_θ_metric)
+                σ_list.append(σ_metric)
+                val_σ_list.append(val_σ_metric)
+
+            # show loss graph
+            plt.figure()
+            plt.plot(range(len(loss_list)), loss_list, label="train")
+            plt.plot(range(len(loss_list)), val_loss_list, label="validation")
+            plt.xlabel("epoch")
+            plt.ylabel("loss")
+            plt.savefig('analysis/loss.png')
+
+            # show P_M graph
+            plt.figure()
+            plt.plot(range(len(loss_list)), P_M_list, label="train")
+            plt.plot(range(len(loss_list)), val_P_M_list, label="validation")
+            plt.xlabel("epoch")
+            plt.ylabel("binary accuracy")
+            plt.savefig('analysis/P_M.png')
+
+            # show θ graph
+            plt.figure()
+            plt.plot(range(len(loss_list)), θ_list, label="train")
+            plt.plot(range(len(loss_list)), val_θ_list, label="validation")
+            plt.xlabel("epoch")
+            plt.ylabel("θ mae")
+            plt.savefig('analysis/θ.png')
+
+            # show σ graph
+            plt.figure()
+            plt.plot(range(len(loss_list)), σ_list, label="train")
+            plt.plot(range(len(loss_list)), val_σ_list, label="validation")
+            plt.xlabel("epoch")
+            plt.ylabel("σ mae")
+            plt.savefig('analysis/σ.png')
 
     def clear_checkpoint(self) -> None:
         """

@@ -13,6 +13,9 @@ argument_parser.add_argument('-t', '--train',
 argument_parser.add_argument('-e', '--estimate',
                              help='推定',
                              action='store_true')
+argument_parser.add_argument('-l', '--log_analytics',
+                             help='学習ログ分析',
+                             action='store_true')
 argument_parser.add_argument('-v', '--version', help='バージョン(1 or 2)', type=int, default=1)
 argument_parser.add_argument('-n', '--normalize', help='正規化するか', action='store_true')
 argument_parser.add_argument('-c', '--callback', help='コールバックするか', action='store_true')
@@ -30,5 +33,7 @@ if arguments.train:
     human_service.train()
 elif arguments.estimate:
     human_service.estimate()
+elif arguments.log_analytics:
+    human_service.analytics_log()
 else:
     argument_parser.print_help()
