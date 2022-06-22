@@ -1,8 +1,9 @@
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
+import sklearn.preprocessing
 import tensorflow as tf
-from tensorflow.keras import Model, metrics, optimizers
+from tensorflow.keras import Model, metrics
 import tensorflow.keras.backend as K
 from tensorflow.keras.callbacks import ModelCheckpoint
 
@@ -54,12 +55,27 @@ class BaseNNet(metaclass=ABCMeta):
     年齢の最大値
     """
 
+    MIN_AGE_TENSOR = K.constant(MIN_AGE)
+    """
+    最小年齢のTensor
+    """
+
+    MAX_AGE_TENSOR = K.constant(MAX_AGE)
+    """
+    最大年齢のTensor
+    """
+
+    IS_NORMALIZED = True
+    """
+    正規化するか
+    """
+
     def __init__(self):
         self.make_model()
 
-        adam = optimizers.Adam(learning_rate=0.001)
+        # adam = optimizers.Adam(learning_rate=0.001)
         self.model.compile(
-            optimizer=adam,
+            optimizer='adam',
             loss=self.loss,
             metrics=[self.P_M_metric, self.θ_metric, self.σ_metric]
         )
@@ -91,6 +107,10 @@ class BaseNNet(metaclass=ABCMeta):
         """
         学習
         """
+
+        if self.IS_NORMALIZED:
+            y_train[:, 0] = sklearn.preprocessing.minmax_scale(y_train[:, 0])
+            y_test[:, 0] = sklearn.preprocessing.minmax_scale(y_test[:, 0])
 
         # チェックポイントを保存するコールパックを定義
         checkpoint_file = "%s/cp-{epoch}.h5" % self.CHECKPOINT_PATH
@@ -171,6 +191,11 @@ class BaseNNet(metaclass=ABCMeta):
         θ_M = y_pred[:, 2]
         θ_F = y_pred[:, 3]
 
+        if self.IS_NORMALIZED:
+            y = y * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
+            θ_M = θ_M * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
+            θ_F = θ_F * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
+
         θ = K.switch(
             s == 0,
             θ_M,
@@ -191,6 +216,13 @@ class BaseNNet(metaclass=ABCMeta):
         θ_F = y_pred[:, 3]
         σ_M = K.sqrt(K.exp(y_pred[:, 4]))
         σ_F = K.sqrt(K.exp(y_pred[:, 5]))
+
+        if self.IS_NORMALIZED:
+            y = y * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
+            θ_M = θ_M * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
+            θ_F = θ_F * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
+            σ_M = σ_M * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR)
+            σ_F = σ_F * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR)
 
         θ = K.switch(
             s == 0,
@@ -217,6 +249,10 @@ class BaseNNet(metaclass=ABCMeta):
         ρ_M = y_pred[:, 4]
         ρ_F = y_pred[:, 5]
 
+        if self.IS_NORMALIZED:
+            θ_M = K.sigmoid(θ_M)
+            θ_F = K.sigmoid(θ_F)
+
         return tf.stack([q_M, q_F, θ_M, θ_F, ρ_M, ρ_F], 1)
 
     def predict(self, x: np.ndarray) -> np.ndarray:
@@ -234,5 +270,11 @@ class BaseNNet(metaclass=ABCMeta):
         results[:, 3] = results[:, 3]
         results[:, 4] = np.sqrt(np.exp(results[:, 4]))
         results[:, 5] = np.sqrt(np.exp(results[:, 5]))
+
+        if self.IS_NORMALIZED:
+            results[:, 2] = results[:, 2] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+            results[:, 3] = results[:, 3] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+            results[:, 4] = results[:, 4] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
+            results[:, 5] = results[:, 5] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
 
         return results
