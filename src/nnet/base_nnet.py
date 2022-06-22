@@ -86,7 +86,6 @@ class BaseNNet:
         self.IS_NORMALIZE = normalize
         self.IS_CALLBACK = callback
         self.OPTIMIZER = optimizers.Adam(learning_rate=learning_rate)
-        print(learning_rate)
 
         self.make_model()
         self.compile_model()
@@ -117,10 +116,14 @@ class BaseNNet:
         学習
         """
 
+        y_train = np.array(y_train, dtype=np.float32)
+        y_test = np.array(y_test, dtype=np.float32)
+
         if self.IS_NORMALIZE:
             y_train[:, 0] = (y_train[:, 0] - self.MIN_AGE) / (self.MAX_AGE - self.MIN_AGE)
             y_test[:, 0] = (y_test[:, 0] - self.MIN_AGE) / (self.MAX_AGE - self.MIN_AGE)
 
+        print(y_train[:, 0])
         # チェックポイントを保存するコールパックを定義
         checkpoint_file = "%s/cp-{epoch}.h5" % self.CHECKPOINT_PATH
         checkpoint_callback = ModelCheckpoint(
