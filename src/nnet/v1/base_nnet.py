@@ -36,9 +36,9 @@ class BaseNNet_V1(BaseNNet):
         # θ: 推定年齢
         # σ: 残差標準偏差
         θ = y_pred[:, 0]
-        σ = y_pred[:, 1]
+        ρ = y_pred[:, 1]
 
-        return K.mean(K.log(2 * np.pi * (σ ** 2)) + ((y - θ) ** 2) / (σ ** 2 + self.EPSILON))
+        return K.mean(ρ + ((y - θ) ** 2) * K.exp(-ρ))
 
     def θ_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
@@ -63,7 +63,7 @@ class BaseNNet_V1(BaseNNet):
         y = y_true[:, 0]
 
         θ = y_pred[:, 0]
-        σ = y_pred[:, 1]
+        σ = K.sqrt(K.exp(y_pred[:, 1]))
 
         if self.IS_NORMALIZE:
             y = y * (self.MAX_AGE_TENSOR - self.MIN_AGE_TENSOR) + self.MIN_AGE_TENSOR
@@ -78,13 +78,12 @@ class BaseNNet_V1(BaseNNet):
         """
 
         θ = y_pred[:, 0]
-        σ = y_pred[:, 1]
+        ρ = y_pred[:, 1]
 
         if self.IS_NORMALIZE:
             θ = K.sigmoid(θ)
-            σ = K.sigmoid(σ)
 
-        return tf.stack([θ, σ], 1)
+        return tf.stack([θ, ρ], 1)
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         """
