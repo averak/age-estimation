@@ -45,6 +45,11 @@ class BaseNNet(metaclass=ABCMeta):
     チェックポイントの保存パス
     """
 
+    EPSILON = K.constant(K.epsilon())
+    """
+    ε
+    """
+
     MIN_AGE = 1.0
     """
     年齢の最小値
@@ -77,7 +82,7 @@ class BaseNNet(metaclass=ABCMeta):
         self.model.compile(
             optimizer='adam',
             loss=self.loss,
-            metrics=[self.P_M_metric, self.θ_metric, self.σ_metric]
+            metrics=[self.P_M_metric, self.θ_metric, self.σ_metric, self.loss_metric]
         )
         self.model.summary()
 
@@ -236,6 +241,28 @@ class BaseNNet(metaclass=ABCMeta):
         )
 
         return metrics.mean_absolute_error(K.abs(y - θ), σ)
+
+    def loss_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
+        """
+        lossの評価関数
+        """
+
+        y = y_true[:, 0]
+        s = y_true[:, 1]
+
+        q_M = y_pred[:, 0]
+        q_F = y_pred[:, 1]
+        P_M = K.exp(q_M) / (K.exp(q_M) + K.exp(q_F))
+        P_F = K.exp(q_F) / (K.exp(q_M) + K.exp(q_F))
+        θ_M = y_pred[:, 2]
+        θ_F = y_pred[:, 3]
+        σ_M = K.sqrt(K.exp(y_pred[:, 4]))
+        σ_F = K.sqrt(K.exp(y_pred[:, 5]))
+
+        L_M = K.log(2 * np.pi * (σ_M ** 2)) + ((y - θ_M) ** 2) / (σ_M ** 2 + self.EPSILON) - K.log(P_M + self.EPSILON) * 2
+        L_F = K.log(2 * np.pi * (σ_F ** 2)) + ((y - θ_F) ** 2) / (σ_F ** 2 + self.EPSILON) - K.log(P_F + self.EPSILON) * 2
+
+        return K.mean(K.switch(s == 0, L_M, L_F))
 
     def activation(self, y_pred: np.ndarray):
         """
