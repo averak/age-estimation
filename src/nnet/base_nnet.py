@@ -82,7 +82,7 @@ class BaseNNet(metaclass=ABCMeta):
         self.model.compile(
             optimizer='adam',
             loss=self.loss,
-            metrics=[self.P_M_metric, self.θ_metric, self.σ_metric, self.loss_metric]
+            metrics=[self.P_M_metric, self.θ_metric, self.σ_metric]
         )
         self.model.summary()
 
@@ -183,7 +183,7 @@ class BaseNNet(metaclass=ABCMeta):
 
         P_M = K.exp(q_M) / (K.exp(q_M) + K.exp(q_F))
 
-        return metrics.mean_absolute_error(K.constant(1.0) - s, P_M)
+        return metrics.binary_accuracy(K.constant(1.0) - s, P_M)
 
     def θ_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
