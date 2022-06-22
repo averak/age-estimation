@@ -16,7 +16,7 @@ argument_parser.add_argument('-e', '--estimate',
 argument_parser.add_argument('-l', '--log_analytics',
                              help='学習ログ分析',
                              action='store_true')
-argument_parser.add_argument('-v', '--version', help='バージョン(1 or 2)', type=int, default=1)
+argument_parser.add_argument('-v', '--version', help='バージョン(1 or 2)', type=int, default=2)
 argument_parser.add_argument('-n', '--normalize', help='正規化するか', action='store_true')
 argument_parser.add_argument('-c', '--callback', help='コールバックするか', action='store_true')
 argument_parser.add_argument('-lr', '--learning_rate', help='学習率', type=float, default=0.001)
