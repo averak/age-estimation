@@ -1,7 +1,7 @@
 import numpy as np
 from tensorflow.keras import Model, optimizers
 import tensorflow.keras.backend as K
-from tensorflow.keras.callbacks import ModelCheckpoint, CSVLogger
+from tensorflow.keras.callbacks import CSVLogger, ModelCheckpoint
 
 from nnet.callback import Callback
 from nnet.data_generator import DataGenerator
@@ -149,6 +149,20 @@ class BaseNNet:
     def predict(self, x: np.ndarray) -> np.ndarray:
         """
         推定
+        """
+
+        raise NotImplementedError()
+
+    def export_heatmap(self, train_humans: list, test_humans: list, train_results: np.ndarray, test_results: np.ndarray):
+        """
+        ヒートマップを出力
+        """
+
+        raise NotImplementedError()
+
+    def export_log_graph(self):
+        """
+        ロググラフを出力
         """
 
         raise NotImplementedError()

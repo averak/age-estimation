@@ -4,11 +4,17 @@ from tensorflow.keras import metrics
 import tensorflow.keras.backend as K
 
 from nnet.base_nnet import BaseNNet
+from nnet.v1.analyzer import Analyzer
 
 
 class BaseNNet_V1(BaseNNet):
     """
     ニューラルネットワーク
+    """
+
+    analyzer: Analyzer = Analyzer()
+    """
+    解析器
     """
 
     def compile_model(self):
@@ -97,3 +103,17 @@ class BaseNNet_V1(BaseNNet):
             results[:, 1] = results[:, 1] * (self.MAX_AGE - self.MIN_AGE) + self.MIN_AGE
 
         return results
+
+    def export_heatmap(self, train_humans: list, test_humans: list, train_results: np.ndarray, test_results: np.ndarray):
+        """
+        ヒートマップを出力
+        """
+
+        self.analyzer.export_heatmap(train_humans, test_humans, train_results, test_results)
+
+    def export_log_graph(self):
+        """
+        ロググラフを出力
+        """
+
+        self.analyzer.export_log_graph()
