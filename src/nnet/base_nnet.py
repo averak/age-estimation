@@ -1,5 +1,4 @@
 import numpy as np
-import sklearn.preprocessing
 from tensorflow.keras import Model, optimizers
 import tensorflow.keras.backend as K
 from tensorflow.keras.callbacks import ModelCheckpoint, CSVLogger
@@ -119,8 +118,8 @@ class BaseNNet:
         """
 
         if self.IS_NORMALIZE:
-            y_train[:, 0] = sklearn.preprocessing.minmax_scale(y_train[:, 0])
-            y_test[:, 0] = sklearn.preprocessing.minmax_scale(y_test[:, 0])
+            y_train[:, 0] = (y_train[:, 0] - self.MIN_AGE) / (self.MAX_AGE - self.MIN_AGE)
+            y_test[:, 0] = (y_test[:, 0] - self.MIN_AGE) / (self.MAX_AGE - self.MIN_AGE)
 
         # チェックポイントを保存するコールパックを定義
         checkpoint_file = "%s/cp-{epoch}.h5" % self.CHECKPOINT_PATH
