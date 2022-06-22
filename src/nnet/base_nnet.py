@@ -2,7 +2,7 @@ import numpy as np
 import sklearn.preprocessing
 from tensorflow.keras import Model, optimizers
 import tensorflow.keras.backend as K
-from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras.callbacks import ModelCheckpoint, CSVLogger
 
 from nnet.callback import Callback
 
@@ -130,13 +130,16 @@ class BaseNNet:
         )
         self.model.save_weights(checkpoint_file.format(epoch=0))
 
+        # CSVにロギングするコールバックを定義
+        csv_logger = CSVLogger('analysis/log.csv', separator=',')
+
         # 学習
         callbacks = []
         if self.IS_CALLBACK:
-            callbacks = [checkpoint_callback, Callback()]
+            callbacks = [checkpoint_callback, csv_logger, Callback()]
             shuffle = False
         else:
-            callbacks = [checkpoint_callback]
+            callbacks = [checkpoint_callback, csv_logger]
             shuffle = True
         self.model.fit(
             x_train,
