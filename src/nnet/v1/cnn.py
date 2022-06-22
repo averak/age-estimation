@@ -1,9 +1,9 @@
 from tensorflow.keras import Sequential, layers
 
-from nnet.base_nnet import BaseNNet
+from nnet.v1.base_nnet import BaseNNet_V1
 
 
-class CNN(BaseNNet):
+class CNN_V1(BaseNNet_V1):
     """
     CNN
     """
@@ -28,4 +28,4 @@ class CNN(BaseNNet):
         self.model.add(layers.BatchNormalization())
 
         # fully connected final layer
-        self.model.add(layers.Dense(6, activation=self.activation))
+        self.model.add(layers.Dense(2, activation=self.activation))
