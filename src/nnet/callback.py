@@ -1,8 +1,6 @@
-import numpy as np
-import tensorflow as tf
-from tensorflow.keras import callbacks, optimizers
-import tensorflow.keras.backend as K
 from tensorflow.python.keras.engine.training import Model
+
+from tensorflow.keras import callbacks
 
 
 class Callback(callbacks.Callback):
