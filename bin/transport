@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+scp cuprum-remote:~/age-estimation/analysis.tar.gz .
+tar -xvzf analysis.tar.gz
+rm -f analysis.tar.gz
