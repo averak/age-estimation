@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
+args=""
+for arg; do
+	args="$args $arg"
+done
+
 docker run --gpus=all \
   -v /home/abe/age-estimation/data:/app/data \
   -v /home/abe/age-estimation/ckpt:/app/ckpt \
   -v /home/abe/age-estimation/analysis:/app/analysis \
-  -it age-estimation python src/main.py --train
+  -it age-estimation python src/main.py --train $args
