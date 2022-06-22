@@ -16,13 +16,14 @@ argument_parser.add_argument('-e', '--estimate',
 argument_parser.add_argument('-v', '--version', help='バージョン(1 or 2)', type=int, default=1)
 argument_parser.add_argument('-n', '--normalize', help='正規化するか', action='store_true')
 argument_parser.add_argument('-c', '--callback', help='コールバックするか', action='store_true')
+argument_parser.add_argument('-lr', '--learning_rate', help='学習率', type=float, default=0.001)
 arguments = argument_parser.parse_args()
 
 # アプリケーションサービスを作成
 if arguments.version == 1:
-    nnet = CNN_V1(arguments.normalize, arguments.callback)
+    nnet = CNN_V1(arguments.normalize, arguments.callback, arguments.learning_rate)
 else:
-    nnet = CNN_V2(arguments.normalize, arguments.callback)
+    nnet = CNN_V2(arguments.normalize, arguments.callback, arguments.learning_rate)
 human_service = HumanService(nnet)
 
 if arguments.train:

@@ -1,6 +1,6 @@
 import numpy as np
 import sklearn.preprocessing
-from tensorflow.keras import Model
+from tensorflow.keras import Model, optimizers
 import tensorflow.keras.backend as K
 from tensorflow.keras.callbacks import ModelCheckpoint
 
@@ -77,9 +77,16 @@ class BaseNNet:
     コールバックするか
     """
 
-    def __init__(self, normalize: bool, callback: bool):
+    OPTIMIZER = optimizers.Adam(learning_rate=0.001)
+    """
+    オプティマイザ
+    """
+
+    def __init__(self, normalize: bool, callback: bool, learning_rate: float):
         self.IS_NORMALIZE = normalize
         self.IS_CALLBACK = callback
+        self.OPTIMIZER = optimizers.Adam(learning_rate=learning_rate)
+        print(learning_rate)
 
         self.make_model()
         self.compile_model()

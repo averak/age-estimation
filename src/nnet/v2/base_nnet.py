@@ -16,9 +16,8 @@ class BaseNNet_V2(BaseNNet):
         NNモデルをコンパイル
         """
 
-        # adam = optimizers.Adam(learning_rate=0.001)
         self.model.compile(
-            optimizer='adam',
+            optimizer=self.OPTIMIZER,
             loss=self.loss,
             metrics=[self.P_M_metric, self.θ_metric, self.σ_metric]
         )
