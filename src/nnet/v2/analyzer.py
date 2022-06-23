@@ -203,7 +203,7 @@ class Analyzer(BaseAnalyzer):
         σ_metric_list: list[float] = []
         val_σ_metric_list: list[float] = []
 
-        with open('analysis/heatmap/log.csv', 'r') as f:
+        with open('analysis/log.csv', 'r') as f:
             # ヘッダーを読み飛ばす
             next(csv.reader(f))
 
@@ -226,7 +226,7 @@ class Analyzer(BaseAnalyzer):
         plt.plot(range(len(loss_list)), val_loss_list, label="validation")
         plt.xlabel("epoch")
         plt.ylabel("loss")
-        plt.savefig('analysis/heatmap/log/loss.png')
+        plt.savefig('analysis/log/loss.png')
 
         # show P_M graph
         plt.figure()
@@ -234,7 +234,7 @@ class Analyzer(BaseAnalyzer):
         plt.plot(range(len(loss_list)), val_P_M_metric_list, label="validation")
         plt.xlabel("epoch")
         plt.ylabel("binary accuracy")
-        plt.savefig('analysis/heatmap/log/P_M.png')
+        plt.savefig('analysis/log/P_M.png')
 
         # show θ graph
         plt.figure()
@@ -242,7 +242,7 @@ class Analyzer(BaseAnalyzer):
         plt.plot(range(len(loss_list)), val_θ_metric_list, label="validation")
         plt.xlabel("epoch")
         plt.ylabel("θ mae")
-        plt.savefig('analysis/heatmap/log/θ.png')
+        plt.savefig('analysis/log/θ.png')
 
         # show σ graph
         plt.figure()
@@ -250,4 +250,4 @@ class Analyzer(BaseAnalyzer):
         plt.plot(range(len(loss_list)), val_σ_metric_list, label="validation")
         plt.xlabel("epoch")
         plt.ylabel("σ mae")
-        plt.savefig('analysis/heatmap/log/σ.png')
+        plt.savefig('analysis/log/σ.png')
