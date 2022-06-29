@@ -1,8 +1,9 @@
 import numpy as np
 from tensorflow.keras import Model, optimizers
 import tensorflow.keras.backend as K
-from tensorflow.keras.callbacks import CSVLogger, ModelCheckpoint
+from tensorflow.keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint
 
+from messages import Messages
 from nnet.callback import Callback
 from nnet.data_generator import DataGenerator
 
@@ -123,7 +124,6 @@ class BaseNNet:
             y_train[:, 0] = (y_train[:, 0] - self.MIN_AGE) / (self.MAX_AGE - self.MIN_AGE)
             y_test[:, 0] = (y_test[:, 0] - self.MIN_AGE) / (self.MAX_AGE - self.MIN_AGE)
 
-        print(y_train[:, 0])
         # チェックポイントを保存するコールパックを定義
         checkpoint_file = "%s/cp-{epoch}.h5" % self.CHECKPOINT_PATH
         checkpoint_callback = ModelCheckpoint(
@@ -136,14 +136,27 @@ class BaseNNet:
         # CSVにロギングするコールバックを定義
         csv_logger = CSVLogger('analysis/log.csv', separator=',')
 
+        # 監視する値の変化が停止した時に訓練を終了させるコールバックを定義
+        early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=0, verbose=0, mode='auto')
+
         # 学習
         callbacks = []
         if self.IS_CALLBACK:
-            callbacks = [checkpoint_callback, csv_logger, Callback()]
+            callbacks = [checkpoint_callback, csv_logger, early_stopping, Callback()]
         else:
-            callbacks = [checkpoint_callback, csv_logger]
+            callbacks = [checkpoint_callback, csv_logger, early_stopping]
         self.model.fit_generator(
-            DataGenerator(x_train, y_train, self.BATCH_SIZE),
+            DataGenerator(x_train, y_train, self.BATCH_SIZE, True),
+            epochs=self.EPOCHS,
+            validation_data=(x_test, y_test),
+            callbacks=callbacks
+        )
+
+        # データ群AとBを切り替えて学習
+        print(Messages.RESTART_TRAIN(early_stopping.stopped_epoch))
+        self.model.fit_generator(
+            DataGenerator(x_train, y_train, self.BATCH_SIZE, False),
+            initial_epoch=early_stopping.stopped_epoch,
             epochs=self.EPOCHS,
             validation_data=(x_test, y_test),
             callbacks=callbacks

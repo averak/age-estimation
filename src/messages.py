@@ -24,3 +24,7 @@ class Messages:
     @classmethod
     def DELETE_FILES(cls, file_size: int) -> str:
         return f"{file_size}ファイル削除しました"
+
+    @classmethod
+    def RESTART_TRAIN(cls, epoch: int) -> str:
+        return f"{epoch}目から学習を再開します"
