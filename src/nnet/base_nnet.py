@@ -23,7 +23,7 @@ class BaseNNet:
     入力形状
     """
 
-    EPOCHS: int = 500
+    EPOCHS: int = 250
     """
     エポック数
     """
@@ -137,7 +137,7 @@ class BaseNNet:
         csv_logger = CSVLogger('analysis/log.csv', separator=',')
 
         # 監視する値の変化が停止した時に訓練を終了させるコールバックを定義
-        early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=0, verbose=0, mode='auto')
+        early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=0, mode='auto')
 
         # 学習
         callbacks = []
@@ -154,6 +154,7 @@ class BaseNNet:
 
         # データ群AとBを切り替えて学習
         print(Messages.RESTART_TRAIN(early_stopping.stopped_epoch))
+        early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=0, mode='auto')
         self.model.fit_generator(
             DataGenerator(x_train, y_train, self.BATCH_SIZE, False),
             initial_epoch=early_stopping.stopped_epoch,
