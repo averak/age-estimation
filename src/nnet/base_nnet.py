@@ -137,14 +137,14 @@ class BaseNNet:
         csv_logger = CSVLogger('analysis/log.csv', separator=',')
 
         # 監視する値の変化が停止した時に訓練を終了させるコールバックを定義
-        early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=0, mode='auto')
+        # early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=0, mode='auto')
 
         # 学習
         callbacks = []
         if self.IS_CALLBACK:
-            callbacks = [checkpoint_callback, csv_logger, early_stopping, Callback()]
+            callbacks = [checkpoint_callback, csv_logger, Callback()]
         else:
-            callbacks = [checkpoint_callback, csv_logger, early_stopping]
+            callbacks = [checkpoint_callback, csv_logger]
         self.model.fit_generator(
             DataGenerator(x_train, y_train, self.BATCH_SIZE, True),
             epochs=self.EPOCHS,
@@ -153,11 +153,9 @@ class BaseNNet:
         )
 
         # データ群AとBを切り替えて学習
-        print(Messages.RESTART_TRAIN(early_stopping.stopped_epoch))
-        early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=0, mode='auto')
         self.model.fit_generator(
             DataGenerator(x_train, y_train, self.BATCH_SIZE, False),
-            initial_epoch=early_stopping.stopped_epoch,
+            initial_epoch=self.EPOCHS - 1,
             epochs=self.EPOCHS,
             validation_data=(x_test, y_test),
             callbacks=callbacks
