@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import metrics
+from tensorflow.keras import metrics, losses
 import tensorflow.keras.backend as K
 
 from nnet.base_nnet import BaseNNet
@@ -22,14 +22,22 @@ class BaseNNet_V1(BaseNNet):
         NNモデルをコンパイル
         """
 
-        self.model.compile(
-            optimizer=self.OPTIMIZER,
-            loss=self.loss,
-            metrics=[self.θ_metric, self.σ_metric]
-        )
+        if self.MODE == 0:
+            self.model.compile(
+                optimizer=self.OPTIMIZER,  # type: ignore
+                loss=self.loss_0,
+                metrics=[self.θ_metric, self.σ_metric]
+            )
+        else:
+            self.model.compile(
+                optimizer=self.OPTIMIZER,  # type: ignore
+                loss=self.loss_1,
+                metrics=[self.θ_metric, self.σ_metric]
+            )
+
         self.model.summary()
 
-    def loss(self, y_true: np.ndarray, y_pred: np.ndarray):
+    def loss_1(self, y_true: np.ndarray, y_pred: np.ndarray):
         """
         損失関数
         """
@@ -45,6 +53,22 @@ class BaseNNet_V1(BaseNNet):
         σ = y_pred[:, 1]
 
         return K.mean(K.log(2 * np.pi * (σ ** 2) + self.EPSILON) + ((y - θ) ** 2) / (σ ** 2 + self.EPSILON))
+
+    def loss_0(self, y_true: np.ndarray, y_pred: np.ndarray):
+        """
+        損失関数
+        """
+
+        y_true = tf.cast(y_true, y_pred.dtype)
+
+        # y: 年齢
+        y = y_true[:, 0]
+
+        # θ: 推定年齢
+        # σ: 残差標準偏差
+        θ = y_pred[:, 0]
+
+        return losses.mean_squared_error(y, θ)
 
     def θ_metric(self, y_true: np.ndarray, y_pred: np.ndarray):
         """

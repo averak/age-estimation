@@ -1,7 +1,7 @@
 import numpy as np
 from tensorflow.keras import Model, optimizers
 import tensorflow.keras.backend as K
-from tensorflow.keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint
+from tensorflow.keras.callbacks import CSVLogger, ModelCheckpoint
 
 from messages import Messages
 from nnet.callback import Callback
@@ -23,7 +23,7 @@ class BaseNNet:
     入力形状
     """
 
-    EPOCHS: int = 250
+    EPOCHS: int = 100
     """
     エポック数
     """
@@ -81,6 +81,11 @@ class BaseNNet:
     OPTIMIZER = optimizers.Adam(learning_rate=0.001)
     """
     オプティマイザ
+    """
+
+    MODE: int = 0
+    """
+    学習モード(0 or 1)
     """
 
     def __init__(self, normalize: bool, callback: bool, learning_rate: float):
@@ -154,9 +159,12 @@ class BaseNNet:
 
         # データ群AとBを切り替えて学習
         print(Messages.RESTART_TRAIN(self.EPOCHS))
+        csv_logger.append = True
+        self.MODE = 1
+        self.compile_model()
         self.model.fit_generator(
-            DataGenerator(x_train, y_train, self.BATCH_SIZE, False),
-            initial_epoch=self.EPOCHS - 1,
+            DataGenerator(x_train, y_train, self.BATCH_SIZE, True),
+            initial_epoch=self.EPOCHS,
             epochs=self.EPOCHS * 2,
             validation_data=(x_test, y_test),
             callbacks=callbacks
