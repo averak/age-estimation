@@ -32,7 +32,7 @@ class Callback(callbacks.Callback):
                 self.model.layers[number_of_layers - i - 1].trainable = False
         else:
             # 識別部をフリーズ
-            for i in range(split_border + 1):
+            for i in range(split_border):
                 self.model.layers[i].trainable = False
 
     def on_train_batch_end(self, batch: int, logs: dict):
