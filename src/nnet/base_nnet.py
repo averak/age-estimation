@@ -23,7 +23,7 @@ class BaseNNet:
     入力形状
     """
 
-    EPOCHS: int = 150
+    EPOCHS: int = 250
     """
     エポック数
     """
@@ -153,6 +153,7 @@ class BaseNNet:
         )
 
         # データ群AとBを切り替えて学習
+        print(Messages.RESTART_TRAIN(self.EPOCHS))
         self.model.fit_generator(
             DataGenerator(x_train, y_train, self.BATCH_SIZE, False),
             initial_epoch=self.EPOCHS - 1,
