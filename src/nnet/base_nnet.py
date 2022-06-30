@@ -23,7 +23,7 @@ class BaseNNet:
     入力形状
     """
 
-    EPOCHS: int = 100
+    EPOCHS: int = 50
     """
     エポック数
     """
@@ -163,7 +163,7 @@ class BaseNNet:
         self.MODE = 1
         self.compile_model()
         self.model.fit_generator(
-            DataGenerator(x_train, y_train, self.BATCH_SIZE, True),
+            DataGenerator(x_train, y_train, self.BATCH_SIZE, False),
             initial_epoch=self.EPOCHS,
             epochs=self.EPOCHS * 2,
             validation_data=(x_test, y_test),
