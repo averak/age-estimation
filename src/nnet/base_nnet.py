@@ -53,7 +53,7 @@ class BaseNNet:
     年齢の最小値
     """
 
-    MAX_AGE = 116.0
+    MAX_AGE = 90.0
     """
     年齢の最大値
     """
