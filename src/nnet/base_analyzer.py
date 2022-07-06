@@ -1,11 +1,19 @@
 from abc import ABCMeta, abstractmethod
 
+import matplotlib.pyplot as plt
 import numpy as np
+
+from human_model import HumanModel
 
 
 class BaseAnalyzer(metaclass=ABCMeta):
     """
     解析器
+    """
+
+    SAVE_PATH: str = "analysis"
+    """
+    保存するパス
     """
 
     @abstractmethod
@@ -23,3 +31,15 @@ class BaseAnalyzer(metaclass=ABCMeta):
         """
 
         raise NotImplementedError()
+
+    def export_age_histogram(self, humans: list):
+        """
+        年齢のヒストグラムを表示
+        """
+
+        age_list = [human.age for human in humans]
+
+        plt.figure()
+        plt.hist(age_list, bins=90)
+        plt.xlabel("Age")
+        plt.savefig(f"{self.SAVE_PATH}/age.png")

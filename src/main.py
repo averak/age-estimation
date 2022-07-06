@@ -16,6 +16,9 @@ argument_parser.add_argument('-e', '--estimate',
 argument_parser.add_argument('-l', '--log_analytics',
                              help='学習ログ分析',
                              action='store_true')
+argument_parser.add_argument('-a', '--age_histogram',
+                             help='年齢のヒストグラムを表示',
+                             action='store_true')
 argument_parser.add_argument('-v', '--version', help='バージョン(1 or 2)', type=int, default=1)
 argument_parser.add_argument('-n', '--normalize', help='正規化するか', action='store_true')
 argument_parser.add_argument('-c', '--callback', help='コールバックするか', action='store_true')
@@ -35,5 +38,7 @@ elif arguments.estimate:
     human_service.estimate()
 elif arguments.log_analytics:
     human_service.analytics_log()
+elif arguments.age_histogram:
+    human_service.plot_age_histogram()
 else:
     argument_parser.print_help()

@@ -68,6 +68,15 @@ class HumanService:
 
         self.nnet.export_log_graph()
 
+    def plot_age_histogram(self) -> None:
+        """
+        年齢のヒストグラムをプロット
+        """
+
+        print(Messages.LOAD_ALL_DATA())
+        humans = self.human_repository.select_all()
+        self.nnet.export_age_histogram(humans)
+
     def clear_checkpoint(self) -> None:
         """
         チェックポイントを削除

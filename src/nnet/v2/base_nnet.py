@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras import metrics
 import tensorflow.keras.backend as K
+from human_model import HumanModel
 
 from nnet.base_nnet import BaseNNet
 from nnet.v2.analyzer import Analyzer
@@ -211,3 +212,10 @@ class BaseNNet_V2(BaseNNet):
         """
 
         self.analyzer.export_log_graph()
+
+    def export_age_histogram(self, humans: list):
+        """
+        年齢のヒストグラムを表示
+        """
+
+        self.analyzer.export_age_histogram(humans)

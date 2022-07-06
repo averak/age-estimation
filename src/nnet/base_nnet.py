@@ -190,3 +190,10 @@ class BaseNNet:
         """
 
         raise NotImplementedError()
+
+    def export_age_histogram(self, humans: list):
+        """
+        年齢のヒストグラムを表示
+        """
+
+        raise NotImplementedError()
