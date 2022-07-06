@@ -2,7 +2,6 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras import metrics
 import tensorflow.keras.backend as K
-from human_model import HumanModel
 
 from nnet.base_nnet import BaseNNet
 from nnet.v2.analyzer import Analyzer
@@ -24,7 +23,7 @@ class BaseNNet_V2(BaseNNet):
         """
 
         self.model.compile(
-            optimizer=self.OPTIMIZER,
+            optimizer=self.OPTIMIZER,  # type: ignore
             loss=self.loss,
             metrics=[self.P_M_metric, self.θ_metric, self.σ_metric]
         )
