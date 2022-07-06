@@ -78,6 +78,11 @@ class BaseNNet:
     コールバックするか
     """
 
+    IS_SWITCH_DATA: bool = True
+    """
+    データを切り替えるか
+    """
+
     OPTIMIZER = optimizers.Adam(learning_rate=0.001)
     """
     オプティマイザ
@@ -88,9 +93,10 @@ class BaseNNet:
     学習モード(0 or 1)
     """
 
-    def __init__(self, normalize: bool, callback: bool, learning_rate: float):
+    def __init__(self, normalize: bool, callback: bool, switch_data: bool, learning_rate: float):
         self.IS_NORMALIZE = normalize
         self.IS_CALLBACK = callback
+        self.IS_SWITCH_DATA = switch_data
         self.OPTIMIZER = optimizers.Adam(learning_rate=learning_rate)
 
         self.make_model()
@@ -151,7 +157,7 @@ class BaseNNet:
         else:
             callbacks = [checkpoint_callback, csv_logger]
         self.model.fit_generator(
-            DataGenerator(x_train, y_train, self.BATCH_SIZE, True),
+            DataGenerator(x_train, y_train, self.BATCH_SIZE, False),
             epochs=self.EPOCHS,
             validation_data=(x_test, y_test),
             callbacks=callbacks
@@ -163,7 +169,7 @@ class BaseNNet:
         self.MODE = 1
         self.compile_model()
         self.model.fit_generator(
-            DataGenerator(x_train, y_train, self.BATCH_SIZE, False),
+            DataGenerator(x_train, y_train, self.BATCH_SIZE, self.IS_SWITCH_DATA),
             initial_epoch=self.EPOCHS,
             epochs=self.EPOCHS * 2,
             validation_data=(x_test, y_test),
